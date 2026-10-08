@@ -1,0 +1,15 @@
+# Never publish these. A public repository is visible to everyone.
+.env
+.env.*
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+*.pem
+*.key
+*.pdf
+node_modules/
+.DS_Store
+Thumbs.db
