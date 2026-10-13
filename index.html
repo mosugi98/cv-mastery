@@ -12,11 +12,14 @@
     <link rel="apple-touch-icon" href="./icon-192.png" />
     <!-- Applies the saved theme before first paint. Keep identical to THEME_INIT_SCRIPT in lib/theme.ts (a test checks it). -->
     <script>(function(){try{var t=localStorage.getItem("mc-theme");if(["light","dark","contrast","contrast-dark"].indexOf(t)>-1)document.documentElement.setAttribute("data-theme",t)}catch(e){}})();</script>
-    <script type="module" crossorigin src="./assets/index-NV3fo8HX.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-B8MIe-eD.css">
+    <script type="module" crossorigin src="./assets/index-Cl2TlCua.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-BFPL3yEf.css">
   </head>
   <body class="min-h-screen">
     <div id="root"></div>
+    <!-- Boot watchdog: main.tsx sets window.__cardioBooted after the first render. If that has not happened after 8 s (for example the
+         assets/ folder was not uploaded), say why instead of leaving a blank page. Checked by tests and scripts/check-static-build.mjs. -->
+    <script>setTimeout(function(){if(window.__cardioBooted||document.getElementById("boot-problem"))return;var d=document.createElement("div");d.id="boot-problem";d.setAttribute("role","alert");d.style.cssText="max-width:40rem;margin:2rem auto;padding:0 1rem;font:16px/1.5 system-ui,sans-serif";d.innerHTML='<h1 style="font-size:1.5rem">The study app did not start</h1><p>The app files did not load: the assets/ and data/ folders are probably missing from the repository. Upload those folders themselves, not only their contents.</p><p>See <a href="./UPLOAD-CHECKLIST.txt">UPLOAD-CHECKLIST.txt</a> and the repository <a href="./README.md">README</a>. On a slow connection, wait a moment and reload.</p>';document.body.insertBefore(d,document.body.firstChild)},8000);</script>
     <noscript>This study app needs JavaScript. Please turn it on in your browser.</noscript>
   </body>
 </html>

@@ -1,0 +1,250 @@
+{
+ "about": "Every file of this site with its size in bytes, written last by the build. Settings > Check this site's files compares the published site with `files`. `hidden` are repository files (not part of the site). See UPLOAD-CHECKLIST.txt.",
+ "counts": {
+  "total": 57,
+  "assets": 36,
+  "data": 11,
+  "top": 10,
+  "hidden": 3
+ },
+ "files": [
+  {
+   "path": "README.md",
+   "size": 2833
+  },
+  {
+   "path": "UPLOAD-CHECKLIST.txt",
+   "size": 1839
+  },
+  {
+   "path": "assets/Celebration-D0_n1q7i.js",
+   "size": 1748
+  },
+  {
+   "path": "assets/CoachBubble-IxAuPhk5.js",
+   "size": 392
+  },
+  {
+   "path": "assets/ExamScreen-B_zvXA1e.js",
+   "size": 30358
+  },
+  {
+   "path": "assets/FigureBlock-BSiqE-Na.js",
+   "size": 18359
+  },
+  {
+   "path": "assets/Flashcard-DSo-Tz8r.js",
+   "size": 737
+  },
+  {
+   "path": "assets/FlashcardsScreen-B5ijo-kF.js",
+   "size": 11551
+  },
+  {
+   "path": "assets/HeartbeatProgress-BcyHnVz5.js",
+   "size": 852
+  },
+  {
+   "path": "assets/HomeScreen-B9-QTYr_.js",
+   "size": 9150
+  },
+  {
+   "path": "assets/LibraryScreen-D7ryjhSI.js",
+   "size": 5657
+  },
+  {
+   "path": "assets/LoadError-ux6Wce-d.js",
+   "size": 2575
+  },
+  {
+   "path": "assets/MediaScreen-BkPhbBl-.js",
+   "size": 87698
+  },
+  {
+   "path": "assets/PracticeScreen-KAvUZxeI.js",
+   "size": 10637
+  },
+  {
+   "path": "assets/ProgressScreen-oyE21Q1j.js",
+   "size": 7894
+  },
+  {
+   "path": "assets/SettingsScreen-DxbE2KX3.js",
+   "size": 15571
+  },
+  {
+   "path": "assets/TopicChip-EKplVN0X.js",
+   "size": 607
+  },
+  {
+   "path": "assets/TopicScreen-PD3uSAoy.js",
+   "size": 7493
+  },
+  {
+   "path": "assets/figure-tokens-7CHVPcrB.js",
+   "size": 491
+  },
+  {
+   "path": "assets/fredoka-hebrew-wght-normal-DdnsCkLr.woff2",
+   "size": 8852
+  },
+  {
+   "path": "assets/fredoka-latin-ext-wght-normal-CYrqKuxd.woff2",
+   "size": 4576
+  },
+  {
+   "path": "assets/fredoka-latin-wght-normal-DM6njrJ3.woff2",
+   "size": 29732
+  },
+  {
+   "path": "assets/index-BFPL3yEf.css",
+   "size": 70450
+  },
+  {
+   "path": "assets/index-Cl2TlCua.js",
+   "size": 265590
+  },
+  {
+   "path": "assets/jetbrains-mono-cyrillic-wght-normal-D73BlboJ.woff2",
+   "size": 12108
+  },
+  {
+   "path": "assets/jetbrains-mono-greek-wght-normal-Bw9x6K1M.woff2",
+   "size": 9004
+  },
+  {
+   "path": "assets/jetbrains-mono-latin-ext-wght-normal-DBQx-q_a.woff2",
+   "size": 15196
+  },
+  {
+   "path": "assets/jetbrains-mono-latin-wght-normal-B9CIFXIH.woff2",
+   "size": 40404
+  },
+  {
+   "path": "assets/jetbrains-mono-vietnamese-wght-normal-Bt-aOZkq.woff2",
+   "size": 7504
+  },
+  {
+   "path": "assets/library-C5iLokOF.js",
+   "size": 2077
+  },
+  {
+   "path": "assets/nunito-cyrillic-ext-wght-normal-D4X5GqEv.woff2",
+   "size": 28928
+  },
+  {
+   "path": "assets/nunito-cyrillic-wght-normal-CY6AOgYE.woff2",
+   "size": 20776
+  },
+  {
+   "path": "assets/nunito-latin-ext-wght-normal-CXYtwYOx.woff2",
+   "size": 35588
+  },
+  {
+   "path": "assets/nunito-latin-wght-normal-BzFMHfZw.woff2",
+   "size": 39128
+  },
+  {
+   "path": "assets/nunito-vietnamese-wght-normal-U01xdrZh.woff2",
+   "size": 13096
+  },
+  {
+   "path": "assets/practice-ClEtW6cB.js",
+   "size": 5286
+  },
+  {
+   "path": "assets/progress-BwF3CMM8.js",
+   "size": 2937
+  },
+  {
+   "path": "assets/use-media-CG3tarP7.js",
+   "size": 20052
+  },
+  {
+   "path": "data/curriculum.json",
+   "size": 4999
+  },
+  {
+   "path": "data/figures.json",
+   "size": 1384711
+  },
+  {
+   "path": "data/flashcards.json",
+   "size": 943384
+  },
+  {
+   "path": "data/meta.json",
+   "size": 222
+  },
+  {
+   "path": "data/questions.json",
+   "size": 645461
+  },
+  {
+   "path": "data/topics-1.json",
+   "size": 398070
+  },
+  {
+   "path": "data/topics-2.json",
+   "size": 390690
+  },
+  {
+   "path": "data/topics-3.json",
+   "size": 391680
+  },
+  {
+   "path": "data/topics-4.json",
+   "size": 399365
+  },
+  {
+   "path": "data/topics-5.json",
+   "size": 228720
+  },
+  {
+   "path": "data/topics-index.json",
+   "size": 37275
+  },
+  {
+   "path": "icon-192.png",
+   "size": 4936
+  },
+  {
+   "path": "icon-512.png",
+   "size": 15147
+  },
+  {
+   "path": "icon-maskable-512.png",
+   "size": 9146
+  },
+  {
+   "path": "index.html",
+   "size": 2442
+  },
+  {
+   "path": "manifest.webmanifest",
+   "size": 587
+  },
+  {
+   "path": "mc-mark.svg",
+   "size": 503
+  },
+  {
+   "path": "sw.js",
+   "size": 5225
+  }
+ ],
+ "hidden": [
+  {
+   "path": ".github/workflows/pages.yml",
+   "size": 1617
+  },
+  {
+   "path": ".gitignore",
+   "size": 212
+  },
+  {
+   "path": ".nojekyll",
+   "size": 0
+  }
+ ]
+}

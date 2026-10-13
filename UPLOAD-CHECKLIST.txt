@@ -1,0 +1,37 @@
+CARDIO PPDS MASTER - upload checklist
+=====================================
+
+This folder is the whole study site: 57 files in total, plus 3 hidden.
+  assets/   36 files
+  data/     11 files
+  top level 10 files
+
+1. Upload the folders themselves, not their contents.
+   The site works only when the repository has the same folders as this folder. On the GitHub website
+   (Add file > Upload files) drag the assets and data FOLDERS from this folder into the page, together with
+   the files at the top level. Picking files with the file dialog cannot pick folders: assets/ and data/ are
+   then left out and the published page stays blank. GitHub Desktop or git copy everything as it is
+   (README.md, and docs/GITHUB_PAGES.md of the app, give the steps).
+
+2. Before you switch on Pages, the front page of the repository must show:
+     assets/                     a folder with 36 files
+     data/                       a folder with 11 files
+     README.md
+     UPLOAD-CHECKLIST.txt
+     icon-192.png
+     icon-512.png
+     icon-maskable-512.png
+     index.html
+     manifest.webmanifest
+     mc-mark.svg
+     sw.js
+     upload-manifest.json
+   If assets and data are not shown as folders there, upload them again (step 1).
+
+3. Hidden files: .github/workflows/pages.yml, .gitignore, .nojekyll.
+   Your computer may hide them and the web uploader may skip them. Only .nojekyll matters for the site:
+   if it is missing on GitHub, create it there (Add file > Create new file, name it .nojekyll, commit it empty).
+
+4. After publishing, open the site, go to Settings and press "Check this site's files". It fetches every
+   file listed in upload-manifest.json from the published site and lists any that are missing or have the wrong size.
+   A page that does not start at all shows a message after a few seconds that points to this checklist.
