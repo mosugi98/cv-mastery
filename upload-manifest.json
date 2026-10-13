@@ -1,9 +1,9 @@
 {
  "about": "Every file of this site with its size in bytes, written last by the build. Settings > Check this site's files compares the published site with `files`. `hidden` are repository files (not part of the site). See UPLOAD-CHECKLIST.txt.",
  "counts": {
-  "total": 57,
-  "assets": 36,
-  "data": 11,
+  "total": 67,
+  "assets": 43,
+  "data": 14,
   "top": 10,
   "hidden": 3
  },
@@ -17,67 +17,91 @@
    "size": 1839
   },
   {
-   "path": "assets/Celebration-D0_n1q7i.js",
+   "path": "assets/AnswerOption-J-eaPwU1.js",
+   "size": 1389
+  },
+  {
+   "path": "assets/Celebration-9-zIaAC_.js",
    "size": 1748
   },
   {
-   "path": "assets/CoachBubble-IxAuPhk5.js",
+   "path": "assets/CoachBubble-BDDWz0Ac.js",
    "size": 392
   },
   {
-   "path": "assets/ExamScreen-B_zvXA1e.js",
-   "size": 30358
+   "path": "assets/CxrDrill-DGpH7Vw9.js",
+   "size": 27701
   },
   {
-   "path": "assets/FigureBlock-BSiqE-Na.js",
+   "path": "assets/DrillShell-Cc1mT_nt.js",
+   "size": 12520
+  },
+  {
+   "path": "assets/DrillsScreen-B8ZIPhKe.js",
+   "size": 23090
+  },
+  {
+   "path": "assets/EchoDrill-Cehg0lC7.js",
+   "size": 10547
+  },
+  {
+   "path": "assets/ExamScreen-BC-RrRln.js",
+   "size": 30432
+  },
+  {
+   "path": "assets/FigureBlock-BrhNx0Gt.js",
    "size": 18359
   },
   {
-   "path": "assets/Flashcard-DSo-Tz8r.js",
+   "path": "assets/Flashcard-B_nE3kYh.js",
    "size": 737
   },
   {
-   "path": "assets/FlashcardsScreen-B5ijo-kF.js",
+   "path": "assets/FlashcardsScreen-Cwy78hWt.js",
    "size": 11551
   },
   {
-   "path": "assets/HeartbeatProgress-BcyHnVz5.js",
+   "path": "assets/HeartbeatProgress-BOWt9464.js",
    "size": 852
   },
   {
-   "path": "assets/HomeScreen-B9-QTYr_.js",
+   "path": "assets/HomeScreen-UoFR_T5J.js",
    "size": 9150
   },
   {
-   "path": "assets/LibraryScreen-D7ryjhSI.js",
+   "path": "assets/LibraryScreen-CfUhfnQf.js",
    "size": 5657
   },
   {
-   "path": "assets/LoadError-ux6Wce-d.js",
-   "size": 2575
+   "path": "assets/LoadError-sEtS--Bz.js",
+   "size": 2582
   },
   {
-   "path": "assets/MediaScreen-BkPhbBl-.js",
+   "path": "assets/MediaScreen-ClYIF8YM.js",
    "size": 87698
   },
   {
-   "path": "assets/PracticeScreen-KAvUZxeI.js",
-   "size": 10637
+   "path": "assets/PracticeScreen-Df3C9B2J.js",
+   "size": 10711
   },
   {
-   "path": "assets/ProgressScreen-oyE21Q1j.js",
+   "path": "assets/ProgressScreen-Dm2ciViV.js",
    "size": 7894
   },
   {
-   "path": "assets/SettingsScreen-DxbE2KX3.js",
-   "size": 15571
+   "path": "assets/SettingsScreen-BisSnVNa.js",
+   "size": 15968
   },
   {
-   "path": "assets/TopicChip-EKplVN0X.js",
+   "path": "assets/SoundDrill-CtPf-MF_.js",
+   "size": 23695
+  },
+  {
+   "path": "assets/TopicChip-CFh55out.js",
    "size": 607
   },
   {
-   "path": "assets/TopicScreen-PD3uSAoy.js",
+   "path": "assets/TopicScreen-DsHwMquq.js",
    "size": 7493
   },
   {
@@ -97,12 +121,12 @@
    "size": 29732
   },
   {
-   "path": "assets/index-BFPL3yEf.css",
-   "size": 70450
+   "path": "assets/index-Dc-hFArJ.css",
+   "size": 74821
   },
   {
-   "path": "assets/index-Cl2TlCua.js",
-   "size": 265590
+   "path": "assets/index-pJh7gWA-.js",
+   "size": 267266
   },
   {
    "path": "assets/jetbrains-mono-cyrillic-wght-normal-D73BlboJ.woff2",
@@ -149,20 +173,36 @@
    "size": 13096
   },
   {
-   "path": "assets/practice-ClEtW6cB.js",
-   "size": 5286
+   "path": "assets/practice-Vd_A_SzX.js",
+   "size": 3390
   },
   {
-   "path": "assets/progress-BwF3CMM8.js",
+   "path": "assets/progress-BShS6nFP.js",
    "size": 2937
   },
   {
-   "path": "assets/use-media-CG3tarP7.js",
+   "path": "assets/random-DtiaPBOs.js",
+   "size": 620
+  },
+  {
+   "path": "assets/use-media-Cy_wCdAl.js",
    "size": 20052
   },
   {
    "path": "data/curriculum.json",
    "size": 4999
+  },
+  {
+   "path": "data/drills-cxr.json",
+   "size": 471534
+  },
+  {
+   "path": "data/drills-echo.json",
+   "size": 201090
+  },
+  {
+   "path": "data/drills-sounds.json",
+   "size": 62461
   },
   {
    "path": "data/figures.json",
@@ -174,7 +214,7 @@
   },
   {
    "path": "data/meta.json",
-   "size": 222
+   "size": 255
   },
   {
    "path": "data/questions.json",
@@ -230,7 +270,7 @@
   },
   {
    "path": "sw.js",
-   "size": 5225
+   "size": 5481
   }
  ],
  "hidden": [
