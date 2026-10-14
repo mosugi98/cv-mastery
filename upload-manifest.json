@@ -1,8 +1,8 @@
 {
  "about": "Every file of this site with its size in bytes, written last by the build. Settings > Check this site's files compares the published site with `files`. `hidden` are repository files (not part of the site). See UPLOAD-CHECKLIST.txt.",
  "counts": {
-  "total": 67,
-  "assets": 43,
+  "total": 71,
+  "assets": 47,
   "data": 14,
   "top": 10,
   "hidden": 3
@@ -17,96 +17,104 @@
    "size": 1839
   },
   {
-   "path": "assets/AnswerOption-J-eaPwU1.js",
+   "path": "assets/AnswerOption-DAbzv27G.js",
    "size": 1389
   },
   {
-   "path": "assets/Celebration-9-zIaAC_.js",
+   "path": "assets/Celebration-cAd5iY8t.js",
    "size": 1748
   },
   {
-   "path": "assets/CoachBubble-BDDWz0Ac.js",
+   "path": "assets/CoachBubble-ubS3L6Ui.js",
    "size": 392
   },
   {
-   "path": "assets/CxrDrill-DGpH7Vw9.js",
-   "size": 27701
+   "path": "assets/CxrDrill-RJxELJg4.js",
+   "size": 28006
   },
   {
-   "path": "assets/DrillShell-Cc1mT_nt.js",
-   "size": 12520
+   "path": "assets/DrillShell-LsfztfKd.js",
+   "size": 9804
   },
   {
-   "path": "assets/DrillsScreen-B8ZIPhKe.js",
-   "size": 23090
+   "path": "assets/DrillsScreen-Tmg6-cAj.js",
+   "size": 22995
   },
   {
-   "path": "assets/EchoDrill-Cehg0lC7.js",
-   "size": 10547
+   "path": "assets/EchoDrill-n5EiHOW2.js",
+   "size": 11189
   },
   {
-   "path": "assets/ExamScreen-BC-RrRln.js",
+   "path": "assets/ExamScreen-CCTZ79ZR.js",
    "size": 30432
   },
   {
-   "path": "assets/FigureBlock-BrhNx0Gt.js",
+   "path": "assets/FigureBlock-CowYYb8t.js",
    "size": 18359
   },
   {
-   "path": "assets/Flashcard-B_nE3kYh.js",
+   "path": "assets/Flashcard-BCn9ay8m.js",
    "size": 737
   },
   {
-   "path": "assets/FlashcardsScreen-Cwy78hWt.js",
+   "path": "assets/FlashcardsScreen-D6dSKLub.js",
    "size": 11551
   },
   {
-   "path": "assets/HeartbeatProgress-BOWt9464.js",
+   "path": "assets/HeartbeatProgress-BqhbOKNO.js",
    "size": 852
   },
   {
-   "path": "assets/HomeScreen-UoFR_T5J.js",
+   "path": "assets/HomeScreen-DdsTodar.js",
    "size": 9150
   },
   {
-   "path": "assets/LibraryScreen-CfUhfnQf.js",
+   "path": "assets/LibraryScreen-tF9BcV4M.js",
    "size": 5657
   },
   {
-   "path": "assets/LoadError-sEtS--Bz.js",
+   "path": "assets/LoadError-Sv9x1doc.js",
    "size": 2582
   },
   {
-   "path": "assets/MediaScreen-ClYIF8YM.js",
-   "size": 87698
+   "path": "assets/MediaScreen-ZOUuQKLw.js",
+   "size": 82302
   },
   {
-   "path": "assets/PracticeScreen-Df3C9B2J.js",
+   "path": "assets/OwnItemBuilder-C2dsQAeM.js",
+   "size": 37392
+  },
+  {
+   "path": "assets/PracticeScreen-BCmUzeg7.js",
    "size": 10711
   },
   {
-   "path": "assets/ProgressScreen-Dm2ciViV.js",
+   "path": "assets/ProgressScreen-Z6S-Mk9q.js",
    "size": 7894
   },
   {
-   "path": "assets/SettingsScreen-BisSnVNa.js",
-   "size": 15968
+   "path": "assets/SettingsScreen-DvDrg_9d.js",
+   "size": 16219
   },
   {
-   "path": "assets/SoundDrill-CtPf-MF_.js",
-   "size": 23695
+   "path": "assets/SoundDrill-rXUkv7ui.js",
+   "size": 26249
   },
   {
-   "path": "assets/TopicChip-CFh55out.js",
+   "path": "assets/TopicChip-wvV9rBgR.js",
    "size": 607
   },
   {
-   "path": "assets/TopicScreen-DsHwMquq.js",
+   "path": "assets/TopicScreen-K_e2dKYR.js",
    "size": 7493
   },
   {
    "path": "assets/figure-tokens-7CHVPcrB.js",
    "size": 491
+  },
+  {
+   "path": "assets/format-BnPM8eAR.js",
+   "size": 581
   },
   {
    "path": "assets/fredoka-hebrew-wght-normal-DdnsCkLr.woff2",
@@ -121,12 +129,12 @@
    "size": 29732
   },
   {
-   "path": "assets/index-Dc-hFArJ.css",
-   "size": 74821
+   "path": "assets/index-BOSGEpkS.js",
+   "size": 267352
   },
   {
-   "path": "assets/index-pJh7gWA-.js",
-   "size": 267266
+   "path": "assets/index-DDq7cCm6.css",
+   "size": 75355
   },
   {
    "path": "assets/jetbrains-mono-cyrillic-wght-normal-D73BlboJ.woff2",
@@ -173,11 +181,15 @@
    "size": 13096
   },
   {
-   "path": "assets/practice-Vd_A_SzX.js",
+   "path": "assets/practice-Cbq3vdwU.js",
    "size": 3390
   },
   {
-   "path": "assets/progress-BShS6nFP.js",
+   "path": "assets/prefs-DLCH1LY1.js",
+   "size": 1557
+  },
+  {
+   "path": "assets/progress-BaesG33d.js",
    "size": 2937
   },
   {
@@ -185,8 +197,12 @@
    "size": 620
   },
   {
-   "path": "assets/use-media-Cy_wCdAl.js",
-   "size": 20052
+   "path": "assets/upload-BpxJVnhO.js",
+   "size": 12597
+  },
+  {
+   "path": "assets/use-media-DInPp5Vw.js",
+   "size": 50681
   },
   {
    "path": "data/curriculum.json",
@@ -270,7 +286,7 @@
   },
   {
    "path": "sw.js",
-   "size": 5481
+   "size": 5620
   }
  ],
  "hidden": [
