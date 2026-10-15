@@ -226,7 +226,7 @@
   },
   {
    "path": "data/flashcards.json",
-   "size": 943384
+   "size": 976075
   },
   {
    "path": "data/meta.json",
@@ -238,27 +238,27 @@
   },
   {
    "path": "data/topics-1.json",
-   "size": 398070
+   "size": 399419
   },
   {
    "path": "data/topics-2.json",
-   "size": 390690
+   "size": 393711
   },
   {
    "path": "data/topics-3.json",
-   "size": 391680
+   "size": 393801
   },
   {
    "path": "data/topics-4.json",
-   "size": 399365
+   "size": 395012
   },
   {
    "path": "data/topics-5.json",
-   "size": 228720
+   "size": 234993
   },
   {
    "path": "data/topics-index.json",
-   "size": 37275
+   "size": 37279
   },
   {
    "path": "icon-192.png",
