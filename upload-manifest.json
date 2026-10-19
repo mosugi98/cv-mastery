@@ -1,8 +1,8 @@
 {
  "about": "Every file of this site with its size in bytes, written last by the build. Settings > Check this site's files compares the published site with `files`. `hidden` are repository files (not part of the site). See UPLOAD-CHECKLIST.txt.",
  "counts": {
-  "total": 71,
-  "assets": 47,
+  "total": 74,
+  "assets": 50,
   "data": 14,
   "top": 10,
   "hidden": 3
@@ -17,96 +17,104 @@
    "size": 1839
   },
   {
-   "path": "assets/AnswerOption-DAbzv27G.js",
+   "path": "assets/AnswerOption-DabghQu5.js",
    "size": 1389
   },
   {
-   "path": "assets/Celebration-cAd5iY8t.js",
+   "path": "assets/Celebration-DzHgBhaa.js",
    "size": 1748
   },
   {
-   "path": "assets/CoachBubble-ubS3L6Ui.js",
+   "path": "assets/CoachBubble-BQB4mvi6.js",
    "size": 392
   },
   {
-   "path": "assets/CxrDrill-RJxELJg4.js",
-   "size": 28006
+   "path": "assets/CxrDrill-CM9fYuYh.js",
+   "size": 28034
   },
   {
-   "path": "assets/DrillShell-LsfztfKd.js",
-   "size": 9804
+   "path": "assets/DrillShell-BdFVk4qS.js",
+   "size": 9837
   },
   {
-   "path": "assets/DrillsScreen-Tmg6-cAj.js",
-   "size": 22995
+   "path": "assets/DrillsScreen-BIvOTMbE.js",
+   "size": 23030
   },
   {
-   "path": "assets/EchoDrill-n5EiHOW2.js",
-   "size": 11189
+   "path": "assets/EchoDrill-BG38KAV9.js",
+   "size": 11217
   },
   {
-   "path": "assets/ExamScreen-CCTZ79ZR.js",
+   "path": "assets/ExamScreen-CsGfFGWN.js",
    "size": 30432
   },
   {
-   "path": "assets/FigureBlock-CowYYb8t.js",
+   "path": "assets/FigureBlock-C4TsA-sE.js",
    "size": 18359
   },
   {
-   "path": "assets/Flashcard-BCn9ay8m.js",
+   "path": "assets/Flashcard-CdyQmqKa.js",
    "size": 737
   },
   {
-   "path": "assets/FlashcardsScreen-D6dSKLub.js",
+   "path": "assets/FlashcardsScreen-4uq6S7JA.js",
    "size": 11551
   },
   {
-   "path": "assets/HeartbeatProgress-BqhbOKNO.js",
+   "path": "assets/HeartbeatProgress-CClbtA8i.js",
    "size": 852
   },
   {
-   "path": "assets/HomeScreen-DdsTodar.js",
+   "path": "assets/HighlightsScreen-BgpCyowK.js",
+   "size": 9602
+  },
+  {
+   "path": "assets/HomeScreen-DCScIRz6.js",
    "size": 9150
   },
   {
-   "path": "assets/LibraryScreen-tF9BcV4M.js",
+   "path": "assets/LibraryScreen-DDy8Xayj.js",
    "size": 5657
   },
   {
-   "path": "assets/LoadError-Sv9x1doc.js",
-   "size": 2582
+   "path": "assets/LoadError-Z0zdNGU8.js",
+   "size": 2583
   },
   {
-   "path": "assets/MediaScreen-ZOUuQKLw.js",
+   "path": "assets/MediaScreen-g_yHXkDS.js",
    "size": 82302
   },
   {
-   "path": "assets/OwnItemBuilder-C2dsQAeM.js",
-   "size": 37392
+   "path": "assets/OwnItemBuilder-DoCiZNNV.js",
+   "size": 37285
   },
   {
-   "path": "assets/PracticeScreen-BCmUzeg7.js",
+   "path": "assets/PracticeScreen-kmIowudF.js",
    "size": 10711
   },
   {
-   "path": "assets/ProgressScreen-Z6S-Mk9q.js",
-   "size": 7894
+   "path": "assets/ProgressScreen-BFiWwrSO.js",
+   "size": 12614
   },
   {
-   "path": "assets/SettingsScreen-DvDrg_9d.js",
-   "size": 16219
+   "path": "assets/SettingsScreen-C0_pKAdc.js",
+   "size": 19671
   },
   {
-   "path": "assets/SoundDrill-rXUkv7ui.js",
-   "size": 26249
+   "path": "assets/SoundDrill-BzhBGpLq.js",
+   "size": 26277
   },
   {
-   "path": "assets/TopicChip-wvV9rBgR.js",
+   "path": "assets/TopicChip-BPcjeF_M.js",
    "size": 607
   },
   {
-   "path": "assets/TopicScreen-K_e2dKYR.js",
-   "size": 7493
+   "path": "assets/TopicScreen-HoGY25SM.js",
+   "size": 14618
+  },
+  {
+   "path": "assets/TopicSections-DxjONx9M.js",
+   "size": 5305
   },
   {
    "path": "assets/figure-tokens-7CHVPcrB.js",
@@ -129,12 +137,12 @@
    "size": 29732
   },
   {
-   "path": "assets/index-BOSGEpkS.js",
-   "size": 267352
+   "path": "assets/index-DOpjUhf-.css",
+   "size": 76727
   },
   {
-   "path": "assets/index-DDq7cCm6.css",
-   "size": 75355
+   "path": "assets/index-Qvu1KfFE.js",
+   "size": 283010
   },
   {
    "path": "assets/jetbrains-mono-cyrillic-wght-normal-D73BlboJ.woff2",
@@ -181,15 +189,15 @@
    "size": 13096
   },
   {
-   "path": "assets/practice-Cbq3vdwU.js",
+   "path": "assets/practice-jzqm0I_I.js",
    "size": 3390
   },
   {
-   "path": "assets/prefs-DLCH1LY1.js",
+   "path": "assets/prefs-Ce2LFZNw.js",
    "size": 1557
   },
   {
-   "path": "assets/progress-BaesG33d.js",
+   "path": "assets/progress-BdU2sDP5.js",
    "size": 2937
   },
   {
@@ -197,11 +205,15 @@
    "size": 620
   },
   {
-   "path": "assets/upload-BpxJVnhO.js",
-   "size": 12597
+   "path": "assets/touch-DbjDaL5_.js",
+   "size": 40
   },
   {
-   "path": "assets/use-media-DInPp5Vw.js",
+   "path": "assets/upload-aZh0oPMO.js",
+   "size": 12602
+  },
+  {
+   "path": "assets/use-media-B2MgDNsR.js",
    "size": 50681
   },
   {
@@ -286,7 +298,7 @@
   },
   {
    "path": "sw.js",
-   "size": 5620
+   "size": 5735
   }
  ],
  "hidden": [
