@@ -756,4 +756,281 @@ const doac = {
   },
 };
 
-export const CALCULATORS = [cha2ds2vasc, hasBled, timiNste, timiStemi, heart, wellsPe, spesi, arcHbr, killip, cockcroft, ckdEpi, bsaCalc, infusion, ufh, tnk, enox, doac, lvotSv, avaCont];
+// ------------------------------------------------------------------ echo (stage 4)
+
+const ECHO_NOTE = 'Reference values are from the ASE/EACVI 2015 chamber quantification paper. Use them with the laboratory\'s own reference limits and the whole study.';
+
+const lvMassCalc = {
+  id: 'lv-mass', group: 'echo', title: 'LV mass, RWT and geometry',
+  summary: 'ASE cube-formula LV mass, indexed mass, relative wall thickness and LV geometry.',
+  inputs: [
+    SEX,
+    { key: 'ivs', label: 'Septal thickness (diastole)', type: 'number', unit: 'cm', min: 0.3, max: 3, step: 0.01, required: true },
+    { key: 'lvid', label: 'LV internal diameter (diastole)', type: 'number', unit: 'cm', min: 2, max: 9, step: 0.01, required: true },
+    { key: 'pw', label: 'Posterior wall thickness (diastole)', type: 'number', unit: 'cm', min: 0.3, max: 3, step: 0.01, required: true },
+    { key: 'height', label: 'Height', type: 'number', unit: 'cm', min: 100, max: 250, step: 1, hint: 'With weight, gives the indexed mass and LV geometry' },
+    { key: 'weight', label: 'Weight', type: 'number', unit: 'kg', min: 20, max: 300, step: 0.1 },
+  ],
+  compute: (v) => {
+    const mass = c.lvMass({ ivsCm: v.ivs, lvidCm: v.lvid, pwCm: v.pw });
+    const r = c.rwt({ pwCm: v.pw, lvidCm: v.lvid });
+    const secondary = [{ label: 'Relative wall thickness', value: r, digits: 2, unit: '' }];
+    let category = r > 0.42 ? 'RWT above 0.42: concentric pattern' : 'RWT 0.42 or below: not concentric';
+    if (v.height && v.weight) {
+      const bsa = c.bsaMosteller({ heightCm: v.height, weightKg: v.weight });
+      const lvmi = mass / bsa;
+      const grade = c.lvmiGrade({ lvmi, female: v.sex === 'f' });
+      secondary.push({ label: 'BSA (Mosteller)', value: bsa, digits: 2, unit: 'm²' });
+      secondary.push({ label: 'LV mass index', value: lvmi, digits: 0, unit: 'g/m²' });
+      secondary.push({ label: 'LV mass index grade', text: grade });
+      category = `Geometry: ${c.lvGeometry({ lvmiGrade: grade, rwt: r })}`;
+    }
+    return { primary: { label: 'LV mass', value: mass, digits: 0, unit: 'g' }, secondary, category, note: ECHO_NOTE };
+  },
+  howTo: {
+    formula: [
+      'LV mass = 0.8 × 1.04 × [(IVSd + LVIDd + PWd)³ − LVIDd³] + 0.6 g, with all dimensions in cm',
+      'RWT = 2 × PWd ÷ LVIDd; above 0.42 is concentric',
+      'LV mass index = mass ÷ BSA. Upper limit of normal 95 g/m² (women) and 115 g/m² (men); mild to 108 / 131, moderate to 121 / 148, severe from 122 / 149',
+      'Geometry: normal mass with RWT 0.42 or below = normal; normal mass with RWT above 0.42 = concentric remodelling; high mass with RWT above 0.42 = concentric hypertrophy; high mass with RWT 0.42 or below = eccentric hypertrophy',
+    ],
+    references: ['Lang RM, et al. J Am Soc Echocardiogr 2015;28:1-39 (ASE/EACVI chamber quantification)'],
+  },
+};
+
+const lvefCalc = {
+  id: 'lvef-volumes', group: 'echo', title: 'LVEF from volumes',
+  summary: 'Ejection fraction and stroke volume from end-diastolic and end-systolic volumes.',
+  inputs: [
+    SEX,
+    { key: 'edv', label: 'End-diastolic volume', type: 'number', unit: 'mL', min: 20, max: 600, step: 1, required: true },
+    { key: 'esv', label: 'End-systolic volume', type: 'number', unit: 'mL', min: 5, max: 500, step: 1, required: true },
+  ],
+  compute: (v) => {
+    const r = c.lvefFromVolumes({ edv: v.edv, esv: v.esv });
+    return {
+      primary: { label: 'LVEF', value: r.ef, digits: 0, unit: '%' },
+      secondary: [{ label: 'Stroke volume (EDV − ESV)', value: r.sv, digits: 0, unit: 'mL' }, { label: 'Category (ASE/EACVI 2015)', text: c.efCategory({ ef: r.ef, female: v.sex === 'f' }) }],
+      note: 'Volumes should come from the biplane method of discs. Heart-failure phenotypes use the ESC cut-offs together with symptoms and natriuretic peptides, not this table.',
+    };
+  },
+  howTo: {
+    formula: [
+      'LVEF = (EDV − ESV) ÷ EDV × 100',
+      'Reference range 54-74% (women), 52-72% (men); mildly abnormal 41-53% (women) or 41-51% (men); moderately abnormal 30-40%; severely abnormal below 30%',
+    ],
+    references: ['Lang RM, et al. J Am Soc Echocardiogr 2015;28:1-39'],
+  },
+};
+
+const fsCalc = {
+  id: 'fractional-shortening', group: 'echo', title: 'Fractional shortening',
+  summary: 'Linear LV systolic function from M-mode or 2D diameters.',
+  inputs: [
+    SEX,
+    { key: 'lvidd', label: 'LV internal diameter, diastole', type: 'number', unit: 'cm', min: 2, max: 9, step: 0.01, required: true },
+    { key: 'lvids', label: 'LV internal diameter, systole', type: 'number', unit: 'cm', min: 1, max: 9, step: 0.01, required: true },
+  ],
+  compute: (v) => {
+    const fs = c.fractionalShortening({ lvidd: v.lvidd, lvids: v.lvids });
+    return {
+      primary: { label: 'Fractional shortening', value: fs, digits: 0, unit: '%' },
+      secondary: [{ label: 'Compared with the reference range', text: c.fsCategory({ fs, female: v.sex === 'f' }) }],
+      note: 'Regional wall-motion abnormalities make linear measurements unreliable; use volumes instead.',
+    };
+  },
+  howTo: {
+    formula: ['FS = (LVIDd − LVIDs) ÷ LVIDd × 100', 'Endocardial FS reference: 27-45% (women), 25-43% (men)'],
+    references: ['Lang RM, et al. J Am Soc Echocardiogr 2015;28:1-39'],
+  },
+};
+
+const mvaPhtCalc = {
+  id: 'mva-pht', group: 'echo', title: 'Mitral valve area (pressure half-time)',
+  summary: 'MVA = 220 ÷ pressure half-time in mitral stenosis.',
+  inputs: [{ key: 'pht', label: 'Pressure half-time', type: 'number', unit: 'ms', min: 30, max: 1000, step: 1, required: true, hint: 'Continuous-wave Doppler across the mitral valve' }],
+  compute: (v) => {
+    const mva = c.mvaPht(v.pht);
+    return {
+      primary: { label: 'Mitral valve area', value: mva, digits: 2, unit: 'cm²' },
+      flags: [{ label: 'MVA 1.5 cm² or less (clinically significant mitral stenosis)', met: mva <= 1.5 }],
+      note: 'Unreliable soon after balloon valvuloplasty, with significant aortic regurgitation, and in arrhythmia or tachycardia; confirm with planimetry.',
+    };
+  },
+  howTo: {
+    formula: ['MVA (cm²) = 220 ÷ pressure half-time (ms)', 'Pressure half-time is about 0.29 × deceleration time, so MVA ≈ 759 ÷ deceleration time'],
+    references: ['2021 ESC/EACTS Guidelines for valvular heart disease (clinically significant MS: MVA 1.5 cm² or less)'],
+  },
+};
+
+const pisaCalc = {
+  id: 'pisa-mr', group: 'echo', title: 'Mitral regurgitation by PISA',
+  summary: 'EROA and regurgitant volume, with severity cut-offs from named guidelines.',
+  inputs: [
+    {
+      key: 'mech', label: 'Mechanism', type: 'choice', required: true,
+      options: [{ value: 'primary', label: 'Primary (degenerative)' }, { value: 'secondary', label: 'Secondary (functional)' }],
+    },
+    { key: 'r', label: 'PISA radius', type: 'number', unit: 'cm', min: 0.1, max: 2, step: 0.01, required: true },
+    { key: 'alias', label: 'Aliasing velocity', type: 'number', unit: 'cm/s', min: 10, max: 80, step: 1, required: true, hint: 'The colour-baseline shift used for the PISA radius' },
+    { key: 'vmax', label: 'Peak MR velocity', type: 'number', unit: 'm/s', min: 2, max: 8, step: 0.01, required: true },
+    { key: 'vti', label: 'MR VTI', type: 'number', unit: 'cm', min: 20, max: 300, step: 1, required: true },
+    { key: 'sv', label: 'Total LV stroke volume', type: 'number', unit: 'mL', min: 20, max: 400, step: 1, hint: 'Optional; gives the regurgitant fraction' },
+  ],
+  compute: (v) => {
+    const r = c.pisa({ rCm: v.r, aliasCmS: v.alias, vPeakCmS: v.vmax * 100, vtiCm: v.vti });
+    const f = c.mrSevereFlags({ eroa: r.eroa, rvol: r.rvol });
+    const secondary = [{ label: 'Regurgitant volume', value: r.rvol, digits: 0, unit: 'mL' }];
+    if (v.sv) secondary.push({ label: 'Regurgitant fraction (RVol ÷ total stroke volume)', value: (r.rvol / v.sv) * 100, digits: 0, unit: '%' });
+    const flags = v.mech === 'primary'
+      ? [{ label: 'EROA 0.40 cm² or more (severe primary MR)', met: f.primaryEroa }, { label: 'Regurgitant volume 60 mL or more (severe primary MR)', met: f.primaryRvol }]
+      : [
+        { label: 'ACC/AHA 2017: EROA 0.40 cm² or more', met: f.primaryEroa }, { label: 'ACC/AHA 2017: regurgitant volume 60 mL or more', met: f.primaryRvol },
+        { label: 'ESC/EACTS 2017: EROA above 0.20 cm²', met: f.esc2017SecondaryEroa }, { label: 'ESC/EACTS 2017: regurgitant volume above 30 mL', met: f.esc2017SecondaryRvol },
+      ];
+    return {
+      primary: { label: 'Effective regurgitant orifice area', value: r.eroa, digits: 2, unit: 'cm²' },
+      secondary, flags,
+      category: v.mech === 'secondary' ? 'For secondary MR the guidelines use different cut-offs; both published sets are shown. The 2021 ESC/EACTS values are not reproduced here: check them in the guideline.' : undefined,
+      note: 'PISA assumes a hemispheric flow convergence and one jet; grade MR with several parameters, not one.',
+    };
+  },
+  howTo: {
+    formula: ['EROA = 2π × r² × aliasing velocity ÷ peak MR velocity (r in cm, velocities in cm/s)', 'Regurgitant volume = EROA × MR VTI', 'Regurgitant fraction = regurgitant volume ÷ total LV stroke volume'],
+    references: [
+      'ACC/AHA 2017 valvular heart disease focused update (severe MR: EROA 0.40 cm² or more, RVol 60 mL or more; secondary MR the same)',
+      'ESC/EACTS 2017 guidelines (secondary MR: EROA above 0.20 cm², RVol above 30 mL), as summarised in the ESC e-Journal of Cardiology Practice, vol 16',
+    ],
+  },
+};
+
+const rvspCalc = {
+  id: 'rvsp', group: 'echo', title: 'RV systolic pressure',
+  summary: 'RVSP from the TR jet and an IVC-based right atrial pressure estimate.',
+  inputs: [
+    { key: 'trv', label: 'Peak TR velocity', type: 'number', unit: 'm/s', min: 1, max: 6, step: 0.01, required: true },
+    { key: 'ivc', label: 'IVC diameter (subcostal)', type: 'number', unit: 'cm', min: 0.5, max: 4, step: 0.1, required: true },
+    {
+      key: 'collapse', label: 'IVC collapse with sniff', type: 'choice', required: true,
+      options: [{ value: 'gt50', label: 'More than 50%' }, { value: 'lt50', label: 'Less than 50%' }],
+    },
+  ],
+  compute: (v) => {
+    const rap = c.rapFromIvc({ diameterCm: v.ivc, collapse: v.collapse });
+    const rv = c.rvsp({ trvMs: v.trv, rap });
+    return {
+      primary: { label: 'RV systolic pressure', value: rv, digits: 0, unit: 'mmHg' },
+      secondary: [
+        { label: 'Estimated RAP', value: rap, digits: 0, unit: 'mmHg' },
+        { label: 'Peak gradient (4v²)', value: rv - rap, digits: 0, unit: 'mmHg' },
+      ],
+      flags: [{ label: 'TR velocity above 2.8 m/s', met: v.trv > 2.8 }],
+      note: 'RVSP of 35-40 mmHg or more is generally abnormal. It equals pulmonary artery systolic pressure only without RV outflow obstruction or pulmonic stenosis. The diagnosis of pulmonary hypertension needs right-heart catheterisation.',
+    };
+  },
+  howTo: {
+    formula: ['RVSP = 4 × (TR Vmax)² + RAP', 'RAP: IVC 2.1 cm or less collapsing more than 50% = 3 mmHg; IVC above 2.1 cm collapsing less than 50% = 15 mmHg; anything else = 8 mmHg'],
+    references: ['Rudski LG, et al. J Am Soc Echocardiogr 2010;23:685-713 (right heart guideline)', 'ASE/EACVI 2016 diastolic function recommendations (TR velocity above 2.8 m/s)'],
+  },
+};
+
+const pvrCalc = {
+  id: 'pvr-echo', group: 'echo', title: 'Pulmonary vascular resistance (Doppler)',
+  summary: 'Screening estimate of PVR in Wood units from the TR velocity and RVOT VTI.',
+  inputs: [
+    { key: 'trv', label: 'Peak TR velocity', type: 'number', unit: 'm/s', min: 1, max: 6, step: 0.01, required: true },
+    { key: 'vti', label: 'RVOT VTI', type: 'number', unit: 'cm', min: 3, max: 40, step: 0.1, required: true, hint: 'Pulsed-wave Doppler in the RVOT' },
+  ],
+  compute: (v) => {
+    const r = c.pvrDoppler({ trvMs: v.trv, vtiRvotCm: v.vti });
+    return {
+      primary: r.pvrWu === null ? { label: 'Estimated PVR', text: '2 WU or below, likely' } : { label: 'Estimated PVR', value: r.pvrWu, digits: 1, unit: 'WU' },
+      secondary: [{ label: 'TR velocity ÷ RVOT VTI', value: r.ratio, digits: 3, unit: '' }, { label: 'Band', text: r.band }],
+      note: 'A screening estimate only: it can miss borderline cases and is unreliable with arrhythmia, severe TR or an unreliable TR signal. PVR is defined by right-heart catheterisation.',
+    };
+  },
+  howTo: {
+    formula: ['Ratio = TR velocity (m/s) ÷ RVOT VTI (cm)', 'Ratio 0.175 or below: PVR likely 2 WU or below', 'Ratio above 0.175 up to 0.275: PVR ≈ 10 × ratio (above 2 WU)', 'Ratio above 0.275: PVR ≈ 5 × TR velocity² ÷ RVOT VTI (above 6 WU)'],
+    references: ['Abbas AE, et al. J Am Soc Echocardiogr 2013;26:1170-1177', 'echotext.info, Table 4.16'],
+  },
+};
+
+const qpQsCalc = {
+  id: 'qp-qs', group: 'echo', title: 'Qp/Qs (shunt ratio)',
+  summary: 'Pulmonary-to-systemic flow ratio from RVOT and LVOT diameters and VTIs.',
+  inputs: [
+    { key: 'rd', label: 'RVOT diameter', type: 'number', unit: 'cm', min: 1, max: 5, step: 0.01, required: true },
+    { key: 'rvti', label: 'RVOT VTI', type: 'number', unit: 'cm', min: 3, max: 40, step: 0.1, required: true },
+    { key: 'ld', label: 'LVOT diameter', type: 'number', unit: 'cm', min: 1, max: 3.5, step: 0.01, required: true },
+    { key: 'lvti', label: 'LVOT VTI', type: 'number', unit: 'cm', min: 5, max: 40, step: 0.1, required: true },
+  ],
+  compute: (v) => {
+    const r = c.qpQs({ rvotDcm: v.rd, rvotVti: v.rvti, lvotDcm: v.ld, lvotVti: v.lvti });
+    return {
+      primary: { label: 'Qp/Qs', value: r, digits: 2, unit: '' },
+      category: r > 1.5 ? 'Above 1.5: haemodynamically significant left-to-right shunt' : r < 1 ? 'Below 1.0: suggests a net right-to-left shunt' : '1.0-1.5: no or small shunt by this measure',
+      note: 'Valid only with no significant pulmonary or aortic valve regurgitation and good RVOT diameter measurements. Interpret with RV size and the clinical question.',
+    };
+  },
+  howTo: {
+    formula: ['Qp/Qs = (RVOT diameter² × RVOT VTI) ÷ (LVOT diameter² × LVOT VTI); π/4 cancels', 'Above 1.5: significant left-to-right shunt; about 1.0: none; below 1.0: right-to-left'],
+    references: ['ASE/EACVI echocardiography guidance as summarised in the open-exam-prep advanced haemodynamics guide'],
+  },
+};
+
+const fillingCalc = {
+  id: 'filling-markers', group: 'echo', title: 'Filling-pressure markers (E/e′)',
+  summary: 'Average E/e′ and the other ASE/EACVI diastolic markers, each checked against its cut-off.',
+  inputs: [
+    { key: 'e', label: 'Mitral E velocity', type: 'number', unit: 'cm/s', min: 20, max: 250, step: 1, required: true },
+    { key: 'septal', label: 'Septal e′', type: 'number', unit: 'cm/s', min: 1, max: 25, step: 0.1, required: true },
+    { key: 'lateral', label: 'Lateral e′', type: 'number', unit: 'cm/s', min: 1, max: 25, step: 0.1, required: true },
+    { key: 'trv', label: 'Peak TR velocity', type: 'number', unit: 'm/s', min: 1, max: 6, step: 0.01, hint: 'Optional' },
+    { key: 'lavi', label: 'LA volume index', type: 'number', unit: 'mL/m²', min: 10, max: 120, step: 1, hint: 'Optional; use the LA volume index calculator' },
+  ],
+  compute: (v) => {
+    const ee = c.eOverEprime({ e: v.e, septal: v.septal, lateral: v.lateral });
+    const flags = [
+      { label: 'Average E/e′ above 14', met: ee > 14 },
+      { label: 'Septal e′ below 7 cm/s', met: v.septal < 7 },
+      { label: 'Lateral e′ below 10 cm/s', met: v.lateral < 10 },
+    ];
+    if (v.trv) flags.push({ label: 'TR velocity above 2.8 m/s', met: v.trv > 2.8 });
+    if (v.lavi) flags.push({ label: 'LA volume index above 34 mL/m²', met: v.lavi > 34 });
+    return {
+      primary: { label: 'Average E/e′', value: ee, digits: 1, unit: '' },
+      secondary: [{ label: 'Mean e′', value: (v.septal + v.lateral) / 2, digits: 1, unit: 'cm/s' }],
+      flags,
+      note: 'Each marker is shown against its published cut-off only. The full diastolic-function grading also depends on LVEF, rhythm, mitral disease and the algorithm in the ASE/EACVI 2016 paper; this tool does not grade it.',
+    };
+  },
+  howTo: {
+    formula: ['Average E/e′ = E ÷ mean of septal and lateral e′; above 14 is abnormal', 'Septal e′ below 7 cm/s, lateral e′ below 10 cm/s, TR velocity above 2.8 m/s, LA volume index above 34 mL/m² are the other cut-offs in the 2016 algorithm'],
+    references: ['Nagueh SF, et al. J Am Soc Echocardiogr 2016;29:277-314 (ASE/EACVI diastolic function)'],
+  },
+};
+
+const laviCalc = {
+  id: 'lavi', group: 'echo', title: 'LA volume index',
+  summary: 'LA volume indexed to BSA, with the ASE size grade.',
+  inputs: [
+    { key: 'vol', label: 'LA volume', type: 'number', unit: 'mL', min: 10, max: 300, step: 1, required: true, hint: 'Biplane method, end-systole' },
+    { key: 'height', label: 'Height', type: 'number', unit: 'cm', min: 100, max: 250, step: 1, required: true },
+    { key: 'weight', label: 'Weight', type: 'number', unit: 'kg', min: 20, max: 300, step: 0.1, required: true },
+  ],
+  compute: (v) => {
+    const bsa = c.bsaMosteller({ heightCm: v.height, weightKg: v.weight });
+    const idx = c.lavi({ volumeMl: v.vol, bsa });
+    return {
+      primary: { label: 'LA volume index', value: idx, digits: 0, unit: 'mL/m²' },
+      secondary: [{ label: 'BSA (Mosteller)', value: bsa, digits: 2, unit: 'm²' }, { label: 'Grade', text: c.laviGrade(idx) }],
+      note: 'Normal 16-34 mL/m², mildly enlarged 35-41, moderately 42-48, severely above 48.',
+    };
+  },
+  howTo: {
+    formula: ['LA volume index = LA volume ÷ BSA', 'Normal 16-34, mildly enlarged 35-41, moderately enlarged 42-48, severely enlarged above 48 mL/m²'],
+    references: ['Lang RM, et al. J Am Soc Echocardiogr 2015;28:1-39'],
+  },
+};
+
+export const CALCULATORS = [cha2ds2vasc, hasBled, timiNste, timiStemi, heart, wellsPe, spesi, arcHbr, killip, cockcroft, ckdEpi, bsaCalc, infusion, ufh, tnk, enox, doac, lvotSv, avaCont, lvMassCalc, lvefCalc, fsCalc, mvaPhtCalc, pisaCalc, rvspCalc, pvrCalc, qpQsCalc, fillingCalc, laviCalc];

@@ -92,7 +92,7 @@ for (const n of [coreName, dataName, screenName]) man.files.push({ path: `assets
 man.files.sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0));
 for (const f of man.files) f.size = fs.statSync(path.join(root, f.path)).size;
 man.counts.assets = man.files.filter((f) => f.path.startsWith('assets/')).length;
-man.counts.total = man.files.length;
+man.counts.total = man.files.length + 1; // the manifest lists itself implicitly
 const indent = rawManifest.startsWith('{\n "') ? 1 : 2;
 fs.writeFileSync(mp, JSON.stringify(man, null, indent) + (rawManifest.endsWith('\n') ? '\n' : ''));
 

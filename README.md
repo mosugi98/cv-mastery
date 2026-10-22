@@ -14,6 +14,18 @@ practice questions with explanations, flashcards with spaced repetition, a timed
   inside My Media for them). Do not add anything that identifies a patient. Keep those backup files (`*.cardiolab`)
   outside this repository; its `.gitignore` excludes them.
 
+## Calculators
+
+The *Calculators* tab holds three groups: cardiovascular scores (CHA₂DS₂-VASc/VA, HAS-BLED, TIMI, HEART, Wells, sPESI, ARC-HBR, Killip),
+drug calculations (creatinine clearance, eGFR, infusion converter, heparin, tenecteplase, enoxaparin, DOAC dose check) and
+echocardiography (LVOT stroke volume, aortic valve area, LV mass, LVEF, mitral and PISA measurements, RVSP, PVR, Qp/Qs, E/e′, LA volume).
+Everything is calculated in your browser; nothing typed is stored or sent. Each calculator shows its formula and the source it follows.
+Where sources disagree or could not be confirmed, the tool says so instead of giving a number.
+
+The calculators are source files in `tools/calc/`. After changing them run `node tools/calc/build.mjs` (it writes the hashed files in `assets/`,
+patches the route into the site bundle, and updates `sw.js` and `upload-manifest.json`), then `node --test tools/calc/tests/*.test.mjs`.
+`tools/calc/browser-test.py` drives the real pages with Playwright against a local server (`python3 -m http.server 8765` from the repository root).
+
 ## Not medical advice
 
 This is an educational study aid for exam preparation. It is not medical advice and it is not for use in patient care.

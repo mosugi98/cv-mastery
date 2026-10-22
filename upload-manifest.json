@@ -1,7 +1,7 @@
 {
  "about": "Every file of this site with its size in bytes, written last by the build. Settings > Check this site's files compares the published site with `files`. `hidden` are repository files (not part of the site). See UPLOAD-CHECKLIST.txt.",
  "counts": {
-  "total": 76,
+  "total": 77,
   "assets": 53,
   "data": 14,
   "top": 10,
@@ -10,7 +10,7 @@
  "files": [
   {
    "path": "README.md",
-   "size": 2833
+   "size": 3916
   },
   {
    "path": "UPLOAD-CHECKLIST.txt",
@@ -21,7 +21,7 @@
    "size": 1389
   },
   {
-   "path": "assets/CalculatorsScreen-acd63a89.js",
+   "path": "assets/CalculatorsScreen-3358ef68.js",
    "size": 17423
   },
   {
@@ -121,12 +121,12 @@
    "size": 5305
   },
   {
-   "path": "assets/calc-core-7130c43e.js",
-   "size": 16219
+   "path": "assets/calc-core-d5dd9634.js",
+   "size": 22540
   },
   {
-   "path": "assets/calc-data-167e60c9.js",
-   "size": 44698
+   "path": "assets/calc-data-6c700e4b.js",
+   "size": 62486
   },
   {
    "path": "assets/figure-tokens-7CHVPcrB.js",

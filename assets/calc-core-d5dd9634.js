@@ -25,6 +25,12 @@
 //   first two doses; >=75 y no bolus, 0.75 mg/kg q12h, max 75 mg for the first two doses; severe renal impairment CrCl 15-30 once-daily).
 //  DOAC dose criteria in AF: EHRA Practical Guide 2021 / Europace 2023 table (apixaban, rivaroxaban, edoxaban); Pradaxa SmPC (dabigatran);
 //   Xarelto SmPC (CrCl <15 not recommended).
+//  LV mass, RWT, LVMI grades, LVEF and fractional shortening ranges, LA volume index grades: Lang RM et al. ASE/EACVI chamber quantification,
+//   J Am Soc Echocardiogr 2015;28:1-39 (linear method; grade values as tabulated on echopedia.org and the RDCS study guide).
+//  Pressure half-time MVA 220/PHT, PISA, Qp/Qs, RVSP with RAP from the IVC: ASE/EACVI recommendations (Rudski 2010; Zoghbi 2017 for MR) as
+//   summarised in the open-exam-prep advanced haemodynamics guide.
+//  MR severity: EROA >=0.40 cm2 and RVol >=60 mL (ACC/AHA 2017, primary and secondary); ESC/EACTS 2017 secondary MR EROA >0.20 cm2, RVol >30 mL.
+//  Doppler PVR: Abbas AE et al. J Am Soc Echocardiogr 2013;26:1170-1177 (echotext.info Table 4.16).
 //  Severe AS criteria: 2021 ESC/EACTS VHD guidelines, section 5.1.1 (mean gradient >=40 mmHg, Vmax >=4.0 m/s,
 //  AVA <=1 cm2 or <=0.6 cm2/m2) and 5.1.2 (dimensionless index <0.25).
 
@@ -298,4 +304,129 @@ export function doacAf({ drug, age, weightKg, creatMgDl, crcl, pgpInhibitor = fa
     dose = reduced ? 'Dabigatran 110 mg twice daily' : 'Dabigatran 150 mg twice daily';
   }
   return { drug: name, status: 'ok', reduced, dose, reasons };
+}
+
+// ---------------------------------------------------------------- echo (stage 4)
+
+// LV mass by the ASE cube formula, cm in, g out.
+export function lvMass({ ivsCm, lvidCm, pwCm }) {
+  need('septal thickness', ivsCm, { gt: 0, max: 5 });
+  need('LV internal diameter', lvidCm, { gt: 0, max: 12 });
+  need('posterior wall thickness', pwCm, { gt: 0, max: 5 });
+  return 0.8 * 1.04 * ((ivsCm + lvidCm + pwCm) ** 3 - lvidCm ** 3) + 0.6;
+}
+export function rwt({ pwCm, lvidCm }) {
+  need('posterior wall thickness', pwCm, { gt: 0, max: 5 });
+  need('LV internal diameter', lvidCm, { gt: 0, max: 12 });
+  return (2 * pwCm) / lvidCm;
+}
+// LV mass index grade, linear method. Upper limit of normal 95 (women) / 115 (men) g/m2; mild to 108 / 131; moderate to 121 / 148; severe from 122 / 149.
+export function lvmiGrade({ lvmi, female }) {
+  need('LV mass index', lvmi, { gt: 0 });
+  const [n, m, mo] = female ? [95, 109, 122] : [115, 132, 149];
+  return lvmi <= n ? 'normal' : lvmi < m ? 'mild' : lvmi < mo ? 'moderate' : 'severe';
+}
+export function lvGeometry({ lvmiGrade: grade, rwt: r }) {
+  const hyper = grade !== 'normal';
+  const concentric = r > 0.42;
+  return hyper ? (concentric ? 'concentric hypertrophy' : 'eccentric hypertrophy') : (concentric ? 'concentric remodelling' : 'normal geometry');
+}
+
+export function lvefFromVolumes({ edv, esv }) {
+  need('end-diastolic volume', edv, { gt: 0, max: 1000 });
+  need('end-systolic volume', esv, { min: 0, max: 1000 });
+  if (!(esv < edv)) throw new RangeError('End-systolic volume must be smaller than end-diastolic volume');
+  return { ef: ((edv - esv) / edv) * 100, sv: edv - esv };
+}
+// Reference 54-74 (women) / 52-72 (men); mildly abnormal 41-53 / 41-51; moderately 30-40; severely below 30.
+export function efCategory({ ef, female }) {
+  need('LVEF', ef, { min: 0, max: 100 });
+  const [lo, hi] = female ? [54, 74] : [52, 72];
+  if (ef > hi) return 'above the reference range';
+  if (ef >= lo) return 'normal';
+  if (ef >= 41) return 'mildly abnormal';
+  if (ef >= 30) return 'moderately abnormal';
+  return 'severely abnormal';
+}
+export function fractionalShortening({ lvidd, lvids }) {
+  need('LVIDd', lvidd, { gt: 0, max: 12 });
+  need('LVIDs', lvids, { gt: 0, max: 12 });
+  if (!(lvids < lvidd)) throw new RangeError('LVIDs must be smaller than LVIDd');
+  return ((lvidd - lvids) / lvidd) * 100;
+}
+// Endocardial fractional shortening reference: 27-45% (women), 25-43% (men).
+export function fsCategory({ fs, female }) {
+  const [lo, hi] = female ? [27, 45] : [25, 43];
+  const range = `${lo}-${hi}%`;
+  return fs < lo ? `below reference (${range})` : fs > hi ? `above reference (${range})` : `within reference (${range})`;
+}
+
+// Mitral valve area by pressure half-time (ms in, cm2 out).
+export function mvaPht(phtMs) {
+  need('pressure half-time', phtMs, { gt: 0, max: 2000 });
+  return 220 / phtMs;
+}
+
+// PISA: radius in cm, aliasing velocity and peak MR velocity in cm/s, MR VTI in cm.
+export function pisa({ rCm, aliasCmS, vPeakCmS, vtiCm }) {
+  need('PISA radius', rCm, { gt: 0, max: 3 });
+  need('aliasing velocity', aliasCmS, { gt: 0, max: 100 });
+  need('peak MR velocity', vPeakCmS, { gt: 0, max: 1000 });
+  need('MR VTI', vtiCm, { gt: 0, max: 500 });
+  const eroa = (2 * Math.PI * rCm * rCm * aliasCmS) / vPeakCmS;
+  return { eroa, rvol: eroa * vtiCm };
+}
+export function mrSevereFlags({ eroa, rvol }) {
+  return {
+    primaryEroa: eroa >= 0.40, primaryRvol: rvol >= 60,
+    esc2017SecondaryEroa: eroa > 0.20, esc2017SecondaryRvol: rvol > 30,
+  };
+}
+
+// RAP from the IVC: <=2.1 cm collapsing >50% -> 3; >2.1 cm collapsing <50% -> 15; otherwise 8 mmHg.
+export function rapFromIvc({ diameterCm, collapse }) {
+  need('IVC diameter', diameterCm, { gt: 0, max: 6 });
+  if (collapse !== 'gt50' && collapse !== 'lt50') throw new RangeError('collapse must be gt50 or lt50');
+  if (diameterCm <= 2.1 && collapse === 'gt50') return 3;
+  if (diameterCm > 2.1 && collapse === 'lt50') return 15;
+  return 8;
+}
+export function rvsp({ trvMs, rap }) {
+  need('TR velocity', trvMs, { gt: 0, max: 8 });
+  need('RAP', rap, { min: 0, max: 40 });
+  return 4 * trvMs * trvMs + rap;
+}
+
+// Doppler PVR (Abbas 2013): ratio = TR velocity (m/s) / RVOT VTI (cm).
+export function pvrDoppler({ trvMs, vtiRvotCm }) {
+  need('TR velocity', trvMs, { gt: 0, max: 8 });
+  need('RVOT VTI', vtiRvotCm, { gt: 0, max: 60 });
+  const ratio = trvMs / vtiRvotCm;
+  if (ratio <= 0.175) return { ratio, pvrWu: null, band: 'likely 2 WU or below' };
+  if (ratio <= 0.275) return { ratio, pvrWu: 10 * ratio, band: 'above 2 WU' };
+  return { ratio, pvrWu: (5 * trvMs * trvMs) / vtiRvotCm, band: 'above 6 WU' };
+}
+
+export function qpQs({ rvotDcm, rvotVti, lvotDcm, lvotVti }) {
+  need('RVOT diameter', rvotDcm, { gt: 0, max: 6 });
+  need('RVOT VTI', rvotVti, { gt: 0, max: 60 });
+  need('LVOT diameter', lvotDcm, { gt: 0, max: 5 });
+  need('LVOT VTI', lvotVti, { gt: 0, max: 60 });
+  return (rvotDcm ** 2 * rvotVti) / (lvotDcm ** 2 * lvotVti);
+}
+
+export function eOverEprime({ e, septal, lateral }) {
+  need('mitral E velocity', e, { gt: 0, max: 300 });
+  need('septal e prime', septal, { gt: 0, max: 30 });
+  need('lateral e prime', lateral, { gt: 0, max: 30 });
+  return e / ((septal + lateral) / 2);
+}
+export function lavi({ volumeMl, bsa }) {
+  need('LA volume', volumeMl, { gt: 0, max: 500 });
+  need('BSA', bsa, { gt: 0, max: 4 });
+  return volumeMl / bsa;
+}
+// Normal 16-34, mild 35-41, moderate 42-48, severe above 48 mL/m2.
+export function laviGrade(v) {
+  return v < 35 ? 'normal' : v < 42 ? 'mildly enlarged' : v <= 48 ? 'moderately enlarged' : 'severely enlarged';
 }

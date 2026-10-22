@@ -2,7 +2,7 @@
 // It uses only the app's CSS variables so every theme (light, dark, contrast) works.
 // Nothing typed here is stored or sent. Only the last opened group is remembered, inside try/catch.
 
-import { GROUPS, CALCULATORS } from './calc-data-167e60c9.js';
+import { GROUPS, CALCULATORS } from './calc-data-6c700e4b.js';
 import { j, r } from './index-Qvu1KfFE.js';
 
 const STORE_KEY = 'cx-group';

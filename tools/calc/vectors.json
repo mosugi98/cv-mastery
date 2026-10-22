@@ -9,5 +9,11 @@
   {"fn":"ckdEpi2021","args":{"age":60,"creatMgDl":1.0,"female":false},"expect":86.1626},
   {"fn":"ckdEpi2021","args":{"age":50,"creatMgDl":0.6,"female":true},"expect":109.283},
   {"fn":"infusionRate","args":{"doseMcgPerMin":400,"concMcgPerMl":1600},"expect":15},
-  {"fn":"infusionDose","args":{"rateMlPerH":15,"concMcgPerMl":1600},"expect":400}
+  {"fn":"infusionDose","args":{"rateMlPerH":15,"concMcgPerMl":1600},"expect":400},
+  {"fn":"lvMass","args":{"ivsCm":1.0,"lvidCm":5.0,"pwCm":1.0},"expect":181.976},
+  {"fn":"mvaPht","args":220,"expect":1.0},
+  {"fn":"rvsp","args":{"trvMs":3.0,"rap":8},"expect":44},
+  {"fn":"qpQs","args":{"rvotDcm":2.4,"rvotVti":15,"lvotDcm":2.0,"lvotVti":20},"expect":1.08},
+  {"fn":"eOverEprime","args":{"e":90,"septal":6,"lateral":9},"expect":12.0},
+  {"fn":"fractionalShortening","args":{"lvidd":5.0,"lvids":3.2},"expect":36.0}
 ]

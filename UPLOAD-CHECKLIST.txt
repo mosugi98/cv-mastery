@@ -1,8 +1,8 @@
 CARDIO PPDS MASTER - upload checklist
 =====================================
 
-This folder is the whole study site: 74 files in total, plus 3 hidden.
-  assets/   50 files
+This folder is the whole study site: 77 files in total, plus 3 hidden.
+  assets/   53 files
   data/     14 files
   top level 10 files
 
@@ -14,7 +14,7 @@ This folder is the whole study site: 74 files in total, plus 3 hidden.
    (README.md, and docs/GITHUB_PAGES.md of the app, give the steps).
 
 2. Before you switch on Pages, the front page of the repository must show:
-     assets/                     a folder with 50 files
+     assets/                     a folder with 53 files
      data/                       a folder with 14 files
      README.md
      UPLOAD-CHECKLIST.txt
