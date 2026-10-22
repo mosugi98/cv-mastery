@@ -2,7 +2,7 @@
 // It uses only the app's CSS variables so every theme (light, dark, contrast) works.
 // Nothing typed here is stored or sent. Only the last opened group is remembered, inside try/catch.
 
-import { GROUPS, CALCULATORS } from './calc-data-7fa421bf.js';
+import { GROUPS, CALCULATORS } from './calc-data-b6201bf1.js';
 import { j, r } from './index-Qvu1KfFE.js';
 
 const STORE_KEY = 'cx-group';
@@ -87,6 +87,7 @@ function saveGroup(g) {
 }
 
 const fmt = (x) => {
+  if (x.text !== undefined) return x.text;
   const v = x.value;
   return (Number.isFinite(v) ? v.toFixed(x.digits ?? 1) : '–');
 };

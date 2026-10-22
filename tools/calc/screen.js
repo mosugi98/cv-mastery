@@ -87,6 +87,7 @@ function saveGroup(g) {
 }
 
 const fmt = (x) => {
+  if (x.text !== undefined) return x.text;
   const v = x.value;
   return (Number.isFinite(v) ? v.toFixed(x.digits ?? 1) : '–');
 };

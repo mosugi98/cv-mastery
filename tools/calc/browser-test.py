@@ -106,6 +106,63 @@ with sync_playwright() as p:
     check('velocity criterion met', re.search(r'✓ Met\s*\n?\s*Peak velocity', t) is not None, t)
     check('DVI criterion not met at 0.25', re.search(r'✗ Not met\s*\n?\s*Dimensionless', t) is not None, t)
 
+    # ---- stage 2 scores
+    open_calc(pg, 'Scores', 'HAS-BLED')
+    pg.locator('#cx-f-age').fill('70')
+    pg.get_by_label('Uncontrolled hypertension').check()
+    pg.get_by_label('Prior stroke').check()
+    t = result_text(pg)
+    check('HAS-BLED = 3 high', re.search(r'\b3\b', t) and 'high bleeding risk' in t, t)
+
+    open_calc(pg, 'Scores', 'TIMI risk score')
+    for lab in ['Age 65 or older', '3 or more coronary risk factors', 'ST deviation of 0.5 mm or more', 'Elevated cardiac marker']:
+        pg.get_by_label(lab).check()
+    t = result_text(pg)
+    check('TIMI NSTE = 4 -> 19.9%', '19.9' in t and re.search(r'\b4\b', t), t)
+
+    open_calc(pg, 'Scores', 'TIMI risk index')
+    pg.locator('#cx-f-age').fill('70')
+    pg.get_by_label('Systolic BP below 100 mmHg').check()
+    pg.get_by_label('Heart rate above 100 bpm').check()
+    t = result_text(pg)
+    check('TIMI STEMI = 7 -> 23.4%', '23.4' in t and re.search(r'\b7\b', t), t)
+
+    open_calc(pg, 'Scores', 'HEART score')
+    check('HEART waits for grades', 'Still needed' in result_text(pg))
+    pg.get_by_label('Highly suspicious (2)').check()
+    pg.get_by_label('Non-specific repolarisation disturbance (1)').check()
+    pg.get_by_label('1-3× normal limit (1)').check()
+    pg.locator('#cx-f-age').fill('62')
+    pg.locator('#cx-f-riskCount').fill('2')
+    t = result_text(pg)
+    check('HEART = 6 intermediate', re.search(r'\b6\b', t) and 'intermediate' in t, t)
+
+    open_calc(pg, 'Scores', 'Wells score')
+    pg.get_by_label('Clinical signs and symptoms of DVT').check()
+    pg.get_by_label('Heart rate above 100 bpm').check()
+    t = result_text(pg)
+    check('Wells = 4.5 likely / moderate', '4.5' in t and 'PE likely' in t and 'moderate' in t, t)
+
+    open_calc(pg, 'Scores', 'sPESI')
+    pg.locator('#cx-f-age').fill('82'); pg.locator('#cx-f-hr').fill('112')
+    pg.locator('#cx-f-sbp').fill('98'); pg.locator('#cx-f-spo2').fill('88')
+    t = result_text(pg)
+    check('sPESI = 4 not low', re.search(r'\b4\b', t) and 'not low risk' in t, t)
+
+    open_calc(pg, 'Scores', 'ARC-HBR')
+    pg.get_by_label('Minor: Age 75 or older').check()
+    check('ARC-HBR 1 minor = not high', 'Not high bleeding risk' in result_text(pg), result_text(pg))
+    pg.get_by_label('Minor: Long-term use of oral NSAIDs or steroids').check()
+    check('ARC-HBR 2 minor = high', 'High bleeding risk' in result_text(pg) and 'Not high' not in result_text(pg), result_text(pg))
+    pg.get_by_label('Minor: Age 75 or older').uncheck(); pg.get_by_label('Minor: Long-term use of oral NSAIDs or steroids').uncheck()
+    pg.get_by_label('Major: Haemoglobin below 11 g/dL').check()
+    check('ARC-HBR 1 major = high', 'High bleeding risk' in result_text(pg), result_text(pg))
+
+    open_calc(pg, 'Scores', 'Killip')
+    pg.get_by_label('Frank pulmonary oedema').check()
+    t = result_text(pg)
+    check('Killip III', re.search(r'\bIII\b', t) and 'pulmonary oedema' in t, t)
+
     # layout / themes
     check('no horizontal scroll (calc)', not pg.evaluate('document.documentElement.scrollWidth>document.documentElement.clientWidth'))
     for theme in ['dark', 'contrast', 'contrast-dark', 'light']:
