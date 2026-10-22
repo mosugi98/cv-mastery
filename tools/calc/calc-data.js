@@ -500,4 +500,260 @@ const killip = {
   },
 };
 
-export const CALCULATORS = [cha2ds2vasc, hasBled, timiNste, timiStemi, heart, wellsPe, spesi, arcHbr, killip, cockcroft, lvotSv, avaCont];
+// ------------------------------------------------------------------ drugs (stage 3)
+
+const creatInput = (extra = {}) => ({
+  key: 'creat', label: 'Serum creatinine', type: 'number', required: true,
+  units: [
+    { id: 'mgdl', label: 'mg/dL', toBase: 1, min: 0.2, max: 20, step: 0.01 },
+    { id: 'umol', label: 'µmol/L', toBase: 1 / 88.4, min: 18, max: 1768, step: 1 },
+  ],
+  ...extra,
+});
+const AGE = { key: 'age', label: 'Age', type: 'number', unit: 'years', min: 18, max: 120, step: 1, required: true };
+const WEIGHT = { key: 'weight', label: 'Actual body weight', type: 'number', unit: 'kg', min: 20, max: 300, step: 0.1, required: true };
+const DOSE_DISCLAIMER = 'Teaching calculation of published regimens. Check the current label, your hospital protocol and the patient before prescribing.';
+const fmtInt = (n) => Math.round(n).toLocaleString('en-US');
+
+const ckdEpi = {
+  id: 'ckd-epi-2021', group: 'drugs', title: 'eGFR (CKD-EPI 2021)',
+  summary: 'Race-free creatinine-based eGFR with KDIGO GFR category.',
+  inputs: [AGE, SEX, creatInput()],
+  compute: (v) => {
+    const egfr = c.ckdEpi2021({ age: v.age, creatMgDl: v.creat, female: v.sex === 'f' });
+    const stage = egfr >= 90 ? 'G1 (90 or more)' : egfr >= 60 ? 'G2 (60-89)' : egfr >= 45 ? 'G3a (45-59)' : egfr >= 30 ? 'G3b (30-44)' : egfr >= 15 ? 'G4 (15-29)' : 'G5 (below 15)';
+    return {
+      primary: { label: 'eGFR', value: egfr, digits: 0, unit: 'mL/min/1.73 m²' },
+      secondary: [{ label: 'KDIGO GFR category', text: stage }],
+      note: 'Indexed to 1.73 m² of body surface. Drug labels and the DOAC trials use Cockcroft-Gault creatinine clearance, not eGFR; use the CrCl calculator for dosing. A GFR category needs persistence for 3 months to define CKD.',
+    };
+  },
+  howTo: {
+    formula: [
+      'eGFR = 142 × min(Scr/κ, 1)^α × max(Scr/κ, 1)^−1.200 × 0.9938^age × 1.012 (if female)',
+      'Scr in mg/dL; κ = 0.7 (female) or 0.9 (male); α = −0.241 (female) or −0.302 (male)',
+      'KDIGO categories: G1 90 or more, G2 60-89, G3a 45-59, G3b 30-44, G4 15-29, G5 below 15',
+    ],
+    references: ['Inker LA, et al. N Engl J Med 2021;385:1737-1749 (CKD-EPI 2021 creatinine equation)', 'KDIGO CKD guideline (GFR categories)'],
+  },
+};
+
+const bsaCalc = {
+  id: 'bsa', group: 'drugs', title: 'Body surface area and ideal weight',
+  summary: 'BSA (Mosteller), ideal weight (Devine) and adjusted weight.',
+  inputs: [
+    SEX,
+    { key: 'height', label: 'Height', type: 'number', unit: 'cm', min: 100, max: 250, step: 1, required: true },
+    WEIGHT,
+  ],
+  compute: (v) => {
+    const female = v.sex === 'f';
+    const bsa = c.bsaMosteller({ heightCm: v.height, weightKg: v.weight });
+    const ibw = c.idealBodyWeight({ heightCm: v.height, female });
+    if (ibw <= 0) return { error: 'Ideal body weight is not defined for this height' };
+    const bmi = v.weight / ((v.height / 100) ** 2);
+    return {
+      primary: { label: 'Body surface area (Mosteller)', value: bsa, digits: 2, unit: 'm²' },
+      secondary: [
+        { label: 'Ideal body weight (Devine)', value: ibw, digits: 1, unit: 'kg' },
+        { label: 'Adjusted body weight', value: c.adjustedBodyWeight({ ibw, actual: v.weight }), digits: 1, unit: 'kg' },
+        { label: 'BMI', value: bmi, digits: 1, unit: 'kg/m²' },
+      ],
+    };
+  },
+  howTo: {
+    formula: ['BSA = √(height in cm × weight in kg ÷ 3600)', 'Ideal weight = 50 kg (men) or 45.5 kg (women) + 2.3 kg per inch above 60 inches', 'Adjusted weight = ideal + 0.4 × (actual − ideal)'],
+    references: ['Mosteller RD. N Engl J Med 1987;317:1098', 'Devine BJ. Drug Intell Clin Pharm 1974;8:650-655'],
+  },
+};
+
+const infusion = {
+  id: 'infusion', group: 'drugs', title: 'Infusion rate converter',
+  summary: 'Dose to pump rate (mL/h) and back, for any drug. No dose ranges are suggested.',
+  inputs: [
+    {
+      key: 'direction', label: 'Convert', type: 'choice', required: true, default: 'toRate',
+      options: [{ value: 'toRate', label: 'Dose to pump rate' }, { value: 'toDose', label: 'Pump rate to dose' }],
+    },
+    { key: 'amount', label: 'Drug in the bag or syringe', type: 'number', unit: 'mg', min: 0.001, max: 100000, step: 0.1, required: true },
+    { key: 'volume', label: 'Total volume', type: 'number', unit: 'mL', min: 1, max: 5000, step: 1, required: true },
+    {
+      key: 'doseUnit', label: 'Dose unit', type: 'choice', required: true, default: 'mcgkgmin',
+      options: [{ value: 'mcgkgmin', label: 'mcg/kg/min' }, { value: 'mcgmin', label: 'mcg/min' }, { value: 'mgh', label: 'mg/h' }],
+    },
+    { key: 'weight', label: 'Body weight', type: 'number', unit: 'kg', min: 1, max: 300, step: 0.1, requiredIf: (v) => v.doseUnit === 'mcgkgmin', hint: 'Needed only for mcg/kg/min' },
+    { key: 'dose', label: 'Dose', type: 'number', min: 0, max: 100000, step: 0.01, requiredIf: (v) => v.direction === 'toRate', hint: 'In the dose unit chosen above' },
+    { key: 'rate', label: 'Pump rate', type: 'number', unit: 'mL/h', min: 0, max: 1000, step: 0.1, requiredIf: (v) => v.direction === 'toDose' },
+  ],
+  compute: (v) => {
+    const conc = c.concentrationMcgPerMl({ amountMg: v.amount, volumeMl: v.volume });
+    const toMcgMin = (x) => (v.doseUnit === 'mcgkgmin' ? x * v.weight : v.doseUnit === 'mgh' ? (x * 1000) / 60 : x);
+    const fromMcgMin = (x) => (v.doseUnit === 'mcgkgmin' ? x / v.weight : v.doseUnit === 'mgh' ? (x * 60) / 1000 : x);
+    const unitLabel = { mcgkgmin: 'mcg/kg/min', mcgmin: 'mcg/min', mgh: 'mg/h' }[v.doseUnit];
+    const secondary = [{ label: 'Concentration', value: conc, digits: 1, unit: 'mcg/mL' }];
+    if (v.direction === 'toRate') {
+      const mcgMin = toMcgMin(v.dose);
+      secondary.push({ label: 'Dose as mcg/min', value: mcgMin, digits: 1, unit: 'mcg/min' });
+      return {
+        primary: { label: 'Pump rate', value: c.infusionRate({ doseMcgPerMin: mcgMin, concMcgPerMl: conc }), digits: 1, unit: 'mL/h' },
+        secondary,
+        note: 'Check the result against the usual range for the drug in your protocol; this tool does not know it.',
+      };
+    }
+    const mcgMin = c.infusionDose({ rateMlPerH: v.rate, concMcgPerMl: conc });
+    return {
+      primary: { label: 'Delivered dose', value: fromMcgMin(mcgMin), digits: 2, unit: unitLabel },
+      secondary,
+      note: 'Check the result against the usual range for the drug in your protocol; this tool does not know it.',
+    };
+  },
+  howTo: {
+    formula: [
+      'Concentration (mcg/mL) = drug amount in mg × 1000 ÷ total volume in mL',
+      'Dose as mcg/min = mcg/kg/min × weight, or mg/h × 1000 ÷ 60',
+      'Pump rate (mL/h) = mcg/min × 60 ÷ concentration',
+      'Reverse: mcg/min = pump rate × concentration ÷ 60',
+    ],
+    references: ['Unit arithmetic only; no drug-specific data or dose ranges are used.'],
+  },
+};
+
+const ufh = {
+  id: 'ufh-acs', group: 'drugs', title: 'Unfractionated heparin (ACS)',
+  summary: 'Weight-based bolus at PCI, or bolus and infusion with fibrinolysis.',
+  inputs: [
+    {
+      key: 'setting', label: 'Setting', type: 'choice', required: true, default: 'pci',
+      options: [{ value: 'pci', label: 'During PCI' }, { value: 'lysis', label: 'With fibrinolysis (STEMI)' }],
+    },
+    { key: 'weight', label: 'Body weight', type: 'number', unit: 'kg', min: 20, max: 300, step: 0.1, required: true },
+  ],
+  compute: (v) => {
+    if (v.setting === 'pci') {
+      const r = c.ufhPci({ weightKg: v.weight });
+      return {
+        primary: { label: 'IV bolus during PCI (70-100 IU/kg)', text: `${fmtInt(r.lowIu)} to ${fmtInt(r.highIu)} IU` },
+        category: 'The ESC 2023 recommendation is a weight-adjusted bolus of 70-100 IU/kg during PCI (class I). Adjust to the ACT or institutional target.',
+        note: DOSE_DISCLAIMER,
+      };
+    }
+    const r = c.ufhLysis({ weightKg: v.weight });
+    return {
+      primary: { label: 'IV bolus (60 IU/kg, maximum 4,000 IU)', value: r.bolusIu, digits: 0, unit: 'IU' },
+      secondary: [{ label: 'Infusion (12 IU/kg/h, maximum 1,000 IU/h)', value: r.infusionIuPerH, digits: 0, unit: 'IU/h' }],
+      category: `${r.bolusCapped ? 'Bolus capped at 4,000 IU. ' : ''}${r.infusionCapped ? 'Infusion capped at 1,000 IU/h. ' : ''}Target aPTT 50-70 s, checked at 3, 6, 12 and 24 h; continue 24-48 h.`.trim(),
+      note: DOSE_DISCLAIMER,
+    };
+  },
+  howTo: {
+    formula: ['At PCI: 70-100 IU/kg IV bolus', 'With fibrinolysis: 60 IU/kg bolus (maximum 4,000 IU), then 12 IU/kg/h (maximum 1,000 IU/h), aPTT 50-70 s, 24-48 h'],
+    references: [
+      '2023 ESC Guidelines for the management of acute coronary syndromes (weight-adjusted UFH bolus 70-100 IU/kg during PCI)',
+      'ESC STEMI guidance as tabulated in the McMaster Textbook of Internal Medicine, Table 3.11-2 (fibrinolysis regimen)',
+    ],
+  },
+};
+
+const tnk = {
+  id: 'tenecteplase', group: 'drugs', title: 'Tenecteplase (STEMI)',
+  summary: 'Weight-based single bolus; half dose at age 75 or older.',
+  inputs: [AGE, { key: 'weight', label: 'Body weight', type: 'number', unit: 'kg', min: 20, max: 300, step: 0.1, required: true }],
+  compute: (v) => {
+    const r = c.tenecteplase({ weightKg: v.weight, age: v.age });
+    return {
+      primary: { label: r.halfDose ? 'Half dose, single IV bolus (age 75 or older)' : 'Single IV bolus', value: r.doseMg, digits: r.doseMg % 1 ? 1 : 0, unit: 'mg' },
+      secondary: [{ label: 'Full weight-based dose', value: r.fullMg, digits: 0, unit: 'mg' }],
+      category: r.halfDose
+        ? 'Half dose follows STREAM and the ESC STEMI guidance. The tenecteplase label itself gives no age adjustment, so follow your protocol.'
+        : 'Full weight-based dose. Tenecteplase is given once, with antiplatelets and an anticoagulant, when primary PCI cannot be done in time.',
+      note: DOSE_DISCLAIMER,
+    };
+  },
+  howTo: {
+    formula: ['Below 60 kg 30 mg; 60 to below 70 kg 35 mg; 70 to below 80 kg 40 mg; 80 to below 90 kg 45 mg; 90 kg or more 50 mg', 'Age 75 or older: half of that dose'],
+    references: [
+      'ESC STEMI guidance as tabulated in the McMaster Textbook of Internal Medicine, Table 3.11-2 (weight bands)',
+      'NHS Grampian STEMI thrombolysis protocol (based on the SmPC and 2023 ESC ACS guidelines): 50% reduction at 75 or older',
+      'Armstrong PW, et al. STREAM. N Engl J Med 2013;368:1379-1387',
+    ],
+  },
+};
+
+const enox = {
+  id: 'enoxaparin-acs', group: 'drugs', title: 'Enoxaparin (ACS)',
+  summary: 'NSTE-ACS dose, or STEMI dose with fibrinolysis, adjusted for age and renal function.',
+  inputs: [
+    {
+      key: 'setting', label: 'Setting', type: 'choice', required: true, default: 'nste',
+      options: [{ value: 'nste', label: 'UA / NSTEMI' }, { value: 'stemi-lysis', label: 'STEMI with fibrinolysis' }],
+    },
+    AGE, SEX, WEIGHT, creatInput(),
+  ],
+  compute: (v) => {
+    const crcl = c.cockcroftGault({ age: v.age, weightKg: v.weight, creatMgDl: v.creat, female: v.sex === 'f' });
+    const r = c.enoxaparinAcs({ setting: v.setting, age: v.age, weightKg: v.weight, crcl });
+    if (r.status !== 'ok') return { error: r.reason };
+    const secondary = [{ label: 'Creatinine clearance used (Cockcroft-Gault, actual weight)', value: crcl, digits: 0, unit: 'mL/min' }];
+    if (r.bolusMg) secondary.unshift({ label: 'IV bolus first', value: r.bolusMg, digits: 0, unit: 'mg' });
+    if (r.firstTwoMaxMg) secondary.push({ label: 'Maximum for each of the first two SC doses', value: r.firstTwoMaxMg, digits: 0, unit: 'mg' });
+    const perKg = v.setting === 'stemi-lysis' && v.age >= 75 ? '0.75' : '1';
+    return {
+      primary: { label: `SC dose (${perKg} mg/kg), every ${r.intervalH} hours`, value: r.scMg, digits: 0, unit: 'mg' },
+      secondary,
+      category: r.intervalH === 24 ? 'CrCl below 30 mL/min: the interval is lengthened to once daily.' : undefined,
+      note: `Round to the syringe graduation your hospital uses. ${DOSE_DISCLAIMER}`,
+    };
+  },
+  howTo: {
+    formula: [
+      'UA/NSTEMI: 1 mg/kg SC every 12 h',
+      'STEMI with fibrinolysis, age below 75: 30 mg IV bolus, then 1 mg/kg SC every 12 h; the first two SC doses at most 100 mg',
+      'STEMI with fibrinolysis, age 75 or older: no IV bolus; 0.75 mg/kg SC every 12 h; the first two SC doses at most 75 mg',
+      'CrCl below 30 mL/min: the interval becomes 24 h. Not calculated below 15 mL/min, or for age 75 or older with CrCl below 30 (label text and its table disagree)',
+    ],
+    references: ['Enoxaparin SmPC (Clexane / Lovenox), section 4.2', 'ESC STEMI guidance as tabulated in the McMaster Textbook of Internal Medicine, Table 3.11-2'],
+  },
+};
+
+const doac = {
+  id: 'doac-af', group: 'drugs', title: 'DOAC dose check (atrial fibrillation)',
+  summary: 'Which labelled dose applies for stroke prevention in AF.',
+  inputs: [
+    {
+      key: 'drug', label: 'Drug', type: 'choice', required: true,
+      options: [{ value: 'apixaban', label: 'Apixaban' }, { value: 'rivaroxaban', label: 'Rivaroxaban' }, { value: 'edoxaban', label: 'Edoxaban' }, { value: 'dabigatran', label: 'Dabigatran' }],
+    },
+    AGE, SEX, WEIGHT, creatInput(),
+    { key: 'pgp', label: 'Taking a strong P-gp inhibitor', type: 'check', hint: 'Edoxaban only' },
+    { key: 'verapamil', label: 'Taking verapamil', type: 'check', hint: 'Dabigatran only' },
+  ],
+  compute: (v) => {
+    const crcl = c.cockcroftGault({ age: v.age, weightKg: v.weight, creatMgDl: v.creat, female: v.sex === 'f' });
+    const r = c.doacAf({ drug: v.drug, age: v.age, weightKg: v.weight, creatMgDl: v.creat, crcl, pgpInhibitor: !!v.pgp, verapamil: !!v.verapamil });
+    const secondary = [{ label: 'Creatinine clearance used (Cockcroft-Gault, actual weight)', value: crcl, digits: 0, unit: 'mL/min' }];
+    if (r.status !== 'ok') return { primary: { label: r.drug, text: r.status === 'contraindicated' ? 'Contraindicated' : 'Not calculated' }, secondary, category: r.reasons.join('. '), note: DOSE_DISCLAIMER };
+    const extra = v.drug === 'dabigatran' ? ' SmPC: age 75-80, CrCl 30-50, gastritis/reflux or other bleeding risk may also justify 110 mg; decide individually.' : '';
+    return {
+      primary: { label: r.reduced ? 'Reduced dose applies' : 'Standard dose applies', text: r.dose },
+      secondary,
+      category: r.reduced ? `Reason: ${r.reasons.join('; ')}.` : 'No dose-reduction criterion is met.',
+      note: `For stroke prevention in AF only. Check interactions and the full label.${extra}`,
+    };
+  },
+  howTo: {
+    formula: [
+      'Apixaban 5 mg twice daily; 2.5 mg twice daily if 2 of 3: age 80+, weight 60 kg or less, creatinine 1.5 mg/dL (133 µmol/L) or more; also if CrCl 15-29',
+      'Rivaroxaban 20 mg once daily; 15 mg once daily if CrCl 15-49; not recommended below 15',
+      'Edoxaban 60 mg once daily; 30 mg once daily if any one of: weight 60 kg or less, CrCl 15-49, strong P-gp inhibitor',
+      'Dabigatran 150 mg twice daily; 110 mg twice daily if age 80+ or on verapamil; contraindicated if CrCl below 30',
+      'CrCl is Cockcroft-Gault with actual weight, as in the trials and labels',
+    ],
+    references: [
+      'EHRA Practical Guide on the use of NOACs in AF (Europace 2023;25:euad226, Table 1)',
+      'Pradaxa SmPC, section 4.2 (age 80+, verapamil, CrCl below 30)',
+      'Xarelto SmPC (15 mg for CrCl 15-49; CrCl below 15 not recommended)',
+    ],
+  },
+};
+
+export const CALCULATORS = [cha2ds2vasc, hasBled, timiNste, timiStemi, heart, wellsPe, spesi, arcHbr, killip, cockcroft, ckdEpi, bsaCalc, infusion, ufh, tnk, enox, doac, lvotSv, avaCont];

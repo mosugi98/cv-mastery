@@ -16,6 +16,15 @@
 //  sPESI: Jimenez D et al. Arch Intern Med 2010;170:1383-1389.
 //  ARC-HBR: Urban P et al. Eur Heart J 2019;40:2632-2653 (doi:10.1093/eurheartj/ehz372): high risk = 1 major or 2 minor criteria.
 //  Killip class: Killip T, Kimball JT. Am J Cardiol 1967;20:457-464.
+//  CKD-EPI 2021 creatinine equation: Inker LA et al. N Engl J Med 2021;385:1737-1749 (kidney.org transcription of the constants).
+//  UFH: 2023 ESC ACS guidelines (weight-adjusted bolus 70-100 IU/kg during PCI, class I); with fibrinolysis 60 IU/kg (max 4000 IU) then
+//   12 IU/kg/h (max 1000 IU/h) as tabulated in the McMaster Textbook of Internal Medicine, Table 3.11-2 (ESC STEMI guidance).
+//  Tenecteplase weight bands: the same table and NHS Grampian STEMI thrombolysis protocol (based on SmPC and ESC 2023); half dose at age >=75
+//   (STREAM; ESC 2017 STEMI as cited in Arq Bras Cardiol; NHS Grampian protocol). The Metalyse label itself has no age adjustment.
+//  Enoxaparin in ACS: Lovenox/Clexane SmPC section 4.2 (UA/NSTEMI 1 mg/kg q12h; STEMI <75 y 30 mg IV bolus then 1 mg/kg SC q12h, max 100 mg for the
+//   first two doses; >=75 y no bolus, 0.75 mg/kg q12h, max 75 mg for the first two doses; severe renal impairment CrCl 15-30 once-daily).
+//  DOAC dose criteria in AF: EHRA Practical Guide 2021 / Europace 2023 table (apixaban, rivaroxaban, edoxaban); Pradaxa SmPC (dabigatran);
+//   Xarelto SmPC (CrCl <15 not recommended).
 //  Severe AS criteria: 2021 ESC/EACTS VHD guidelines, section 5.1.1 (mean gradient >=40 mmHg, Vmax >=4.0 m/s,
 //  AVA <=1 cm2 or <=0.6 cm2/m2) and 5.1.2 (dimensionless index <0.25).
 
@@ -182,4 +191,111 @@ const KILLIP = {
 export function killip(cls) {
   if (!Number.isInteger(cls) || cls < 1 || cls > 4) throw new RangeError('Killip class must be 1, 2, 3 or 4');
   return { cls, description: KILLIP[cls] };
+}
+
+// ---------------------------------------------------------------- drugs (stage 3)
+
+// CKD-EPI 2021 (race-free) creatinine equation, mL/min/1.73 m2.
+export function ckdEpi2021({ age, creatMgDl, female }) {
+  need('age', age, { min: 18, max: 130 });
+  need('creatinine', creatMgDl, { gt: 0, max: 50 });
+  const kappa = female ? 0.7 : 0.9;
+  const alpha = female ? -0.241 : -0.302;
+  const r = creatMgDl / kappa;
+  return 142 * Math.min(r, 1) ** alpha * Math.max(r, 1) ** -1.2 * 0.9938 ** age * (female ? 1.012 : 1);
+}
+
+// Infusion arithmetic. All in mcg so the caller converts mg/kg/min etc. first.
+export function concentrationMcgPerMl({ amountMg, volumeMl }) {
+  need('drug amount', amountMg, { gt: 0 });
+  need('volume', volumeMl, { gt: 0 });
+  return (amountMg * 1000) / volumeMl;
+}
+export function infusionRate({ doseMcgPerMin, concMcgPerMl }) {
+  need('dose', doseMcgPerMin, { min: 0 });
+  need('concentration', concMcgPerMl, { gt: 0 });
+  return (doseMcgPerMin * 60) / concMcgPerMl;            // mL/h
+}
+export function infusionDose({ rateMlPerH, concMcgPerMl }) {
+  need('pump rate', rateMlPerH, { min: 0 });
+  need('concentration', concMcgPerMl, { gt: 0 });
+  return (rateMlPerH * concMcgPerMl) / 60;               // mcg/min
+}
+
+// Unfractionated heparin in ACS.
+export function ufhPci({ weightKg }) {
+  need('weight', weightKg, { gt: 0, max: 500 });
+  return { lowIu: 70 * weightKg, highIu: 100 * weightKg };
+}
+export function ufhLysis({ weightKg }) {
+  need('weight', weightKg, { gt: 0, max: 500 });
+  const bolus = 60 * weightKg;
+  const infusion = 12 * weightKg;
+  return {
+    bolusIu: Math.min(bolus, 4000),
+    infusionIuPerH: Math.min(infusion, 1000),
+    bolusCapped: bolus > 4000,
+    infusionCapped: infusion > 1000,
+  };
+}
+
+// Tenecteplase single IV bolus by weight band; half dose at age >=75.
+export function tenecteplase({ weightKg, age }) {
+  need('weight', weightKg, { gt: 0, max: 500 });
+  need('age', age, { min: 18, max: 130 });
+  const fullMg = weightKg < 60 ? 30 : weightKg < 70 ? 35 : weightKg < 80 ? 40 : weightKg < 90 ? 45 : 50;
+  const halfDose = age >= 75;
+  return { fullMg, halfDose, doseMg: halfDose ? fullMg / 2 : fullMg };
+}
+
+// Enoxaparin in ACS. setting: 'nste' | 'stemi-lysis'. crcl in mL/min.
+export function enoxaparinAcs({ setting, age, weightKg, crcl }) {
+  if (setting !== 'nste' && setting !== 'stemi-lysis') throw new RangeError('setting must be nste or stemi-lysis');
+  need('age', age, { min: 18, max: 130 });
+  need('weight', weightKg, { gt: 0, max: 500 });
+  need('creatinine clearance', crcl, { gt: 0 });
+  if (crcl < 15) return { status: 'not-calculated', reason: 'CrCl below 15 mL/min is outside the dosing in the product label.' };
+  const intervalH = crcl < 30 ? 24 : 12;
+  if (setting === 'nste') return { status: 'ok', bolusMg: 0, scMg: weightKg, firstTwoMaxMg: null, intervalH };
+  if (age < 75) return { status: 'ok', bolusMg: 30, scMg: weightKg, firstTwoMaxMg: 100, intervalH };
+  if (crcl < 30) return { status: 'not-calculated', reason: 'Age 75 or older with CrCl below 30 mL/min: the label text and its own dosage table give different doses, so no dose is calculated here.' };
+  return { status: 'ok', bolusMg: 0, scMg: 0.75 * weightKg, firstTwoMaxMg: 75, intervalH };
+}
+
+// DOAC dose for stroke prevention in AF. crcl from Cockcroft-Gault with actual weight (as in the trials and labels).
+export function doacAf({ drug, age, weightKg, creatMgDl, crcl, pgpInhibitor = false, verapamil = false }) {
+  const DRUGS = ['apixaban', 'rivaroxaban', 'edoxaban', 'dabigatran'];
+  if (!DRUGS.includes(drug)) throw new RangeError('drug must be apixaban, rivaroxaban, edoxaban or dabigatran');
+  need('age', age, { min: 18, max: 130 });
+  need('weight', weightKg, { gt: 0, max: 500 });
+  need('creatinine', creatMgDl, { gt: 0, max: 50 });
+  need('creatinine clearance', crcl, { gt: 0 });
+  const name = drug[0].toUpperCase() + drug.slice(1);
+  if (drug === 'dabigatran' && crcl < 30) return { drug: drug[0].toUpperCase() + drug.slice(1), status: 'contraindicated', reduced: null, dose: null, reasons: ['CrCl below 30 mL/min: dabigatran is contraindicated (SmPC)'] };
+  if (crcl < 15) return { drug: drug[0].toUpperCase() + drug.slice(1), status: 'not-calculated', reduced: null, dose: null, reasons: ['CrCl below 15 mL/min is outside the dose criteria used here'] };
+  const reasons = [];
+  let reduced = false;
+  let dose;
+  if (drug === 'apixaban') {
+    const hits = [];
+    if (age >= 80) hits.push('age 80 or older');
+    if (weightKg <= 60) hits.push('weight 60 kg or less');
+    if (creatMgDl >= 1.5) hits.push('creatinine 1.5 mg/dL (133 µmol/L) or more');
+    if (hits.length >= 2) { reduced = true; reasons.push(`2 of 3 criteria met: ${hits.join(', ')}`); }
+    if (crcl < 30) { reduced = true; reasons.push('CrCl 15-29 mL/min'); }
+    dose = reduced ? 'Apixaban 2.5 mg twice daily' : 'Apixaban 5 mg twice daily';
+  } else if (drug === 'rivaroxaban') {
+    if (crcl < 50) { reduced = true; reasons.push('CrCl 15-49 mL/min'); }
+    dose = reduced ? 'Rivaroxaban 15 mg once daily' : 'Rivaroxaban 20 mg once daily';
+  } else if (drug === 'edoxaban') {
+    if (weightKg <= 60) { reduced = true; reasons.push('weight 60 kg or less'); }
+    if (crcl < 50) { reduced = true; reasons.push('CrCl 15-49 mL/min'); }
+    if (pgpInhibitor) { reduced = true; reasons.push('concomitant strong P-gp inhibitor'); }
+    dose = reduced ? 'Edoxaban 30 mg once daily' : 'Edoxaban 60 mg once daily';
+  } else {
+    if (age >= 80) { reduced = true; reasons.push('age 80 or older'); }
+    if (verapamil) { reduced = true; reasons.push('concomitant verapamil'); }
+    dose = reduced ? 'Dabigatran 110 mg twice daily' : 'Dabigatran 150 mg twice daily';
+  }
+  return { drug: name, status: 'ok', reduced, dose, reasons };
 }

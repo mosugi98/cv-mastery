@@ -11,7 +11,11 @@ def sv(a):  return math.pi * (a['lvotDcm'] / 2) ** 2 * a['vtiCm']
 def ava(a): return math.pi * (a['lvotDcm'] / 2) ** 2 * a['vtiLvot'] / a['vtiAv']
 def bsa(a): return math.sqrt(a['heightCm'] * a['weightKg'] / 3600)
 def ibw(a): return (45.5 if a['female'] else 50) + 2.3 * (a['heightCm'] / 2.54 - 60)
-FN = {'cockcroftGault': cg, 'strokeVolume': sv, 'avaContinuity': ava, 'bsaMosteller': bsa,
+def ckd(a):
+    k = 0.7 if a['female'] else 0.9; al = -0.241 if a['female'] else -0.302
+    return 142 * min(a['creatMgDl'] / k, 1) ** al * max(a['creatMgDl'] / k, 1) ** -1.2 * 0.9938 ** a['age'] * (1.012 if a['female'] else 1)
+FN = {'ckdEpi2021': ckd, 'infusionRate': lambda a: a['doseMcgPerMin'] * 60 / a['concMcgPerMl'], 'infusionDose': lambda a: a['rateMlPerH'] * a['concMcgPerMl'] / 60,
+      'cockcroftGault': cg, 'strokeVolume': sv, 'avaContinuity': ava, 'bsaMosteller': bsa,
       'idealBodyWeight': ibw, 'bernoulli': lambda a: 4 * a * a}
 bad = 0
 for v, n in zip(vec, node):
