@@ -1,8 +1,8 @@
 {
  "about": "Every file of this site with its size in bytes, written last by the build. Settings > Check this site's files compares the published site with `files`. `hidden` are repository files (not part of the site). See UPLOAD-CHECKLIST.txt.",
  "counts": {
-  "total": 74,
-  "assets": 50,
+  "total": 76,
+  "assets": 53,
   "data": 14,
   "top": 10,
   "hidden": 3
@@ -19,6 +19,10 @@
   {
    "path": "assets/AnswerOption-DabghQu5.js",
    "size": 1389
+  },
+  {
+   "path": "assets/CalculatorsScreen-57bb492b.js",
+   "size": 17380
   },
   {
    "path": "assets/Celebration-DzHgBhaa.js",
@@ -117,6 +121,14 @@
    "size": 5305
   },
   {
+   "path": "assets/calc-core-8ea94f69.js",
+   "size": 4166
+  },
+  {
+   "path": "assets/calc-data-7fa421bf.js",
+   "size": 12532
+  },
+  {
    "path": "assets/figure-tokens-7CHVPcrB.js",
    "size": 491
   },
@@ -142,7 +154,7 @@
   },
   {
    "path": "assets/index-Qvu1KfFE.js",
-   "size": 283010
+   "size": 283206
   },
   {
    "path": "assets/jetbrains-mono-cyrillic-wght-normal-D73BlboJ.woff2",
@@ -298,7 +310,7 @@
   },
   {
    "path": "sw.js",
-   "size": 5735
+   "size": 5852
   }
  ],
  "hidden": [

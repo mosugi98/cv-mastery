@@ -1,0 +1,10 @@
+[
+  {"fn":"cockcroftGault","args":{"age":60,"weightKg":80,"creatMgDl":1.0,"female":false},"expect":88.8889},
+  {"fn":"cockcroftGault","args":{"age":78,"weightKg":55,"creatMgDl":1.4,"female":true},"expect":28.75}
+,
+  {"fn":"strokeVolume","args":{"lvotDcm":2.1,"vtiCm":22},"expect":76.19},
+  {"fn":"avaContinuity","args":{"lvotDcm":2.1,"vtiLvot":22,"vtiAv":95},"expect":0.802},
+  {"fn":"bsaMosteller","args":{"heightCm":165,"weightKg":60},"expect":1.6583},
+  {"fn":"idealBodyWeight","args":{"heightCm":160,"female":true},"expect":52.4},
+  {"fn":"bernoulli","args":4.5,"expect":81}
+]
