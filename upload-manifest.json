@@ -230,7 +230,7 @@
   },
   {
    "path": "data/curriculum.json",
-   "size": 4999
+   "size": 5126
   },
   {
    "path": "data/drills-cxr.json",
@@ -278,11 +278,11 @@
   },
   {
    "path": "data/topics-5.json",
-   "size": 252746
+   "size": 283079
   },
   {
    "path": "data/topics-index.json",
-   "size": 42813
+   "size": 43709
   },
   {
    "path": "icon-192.png",
