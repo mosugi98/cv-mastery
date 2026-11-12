@@ -246,11 +246,11 @@
   },
   {
    "path": "data/figures.json",
-   "size": 1384711
+   "size": 1384865
   },
   {
    "path": "data/flashcards.json",
-   "size": 980750
+   "size": 981001
   },
   {
    "path": "data/meta.json",
@@ -258,7 +258,7 @@
   },
   {
    "path": "data/questions.json",
-   "size": 653497
+   "size": 653678
   },
   {
    "path": "data/topics-1.json",
@@ -266,7 +266,7 @@
   },
   {
    "path": "data/topics-2.json",
-   "size": 423908
+   "size": 424303
   },
   {
    "path": "data/topics-3.json",
