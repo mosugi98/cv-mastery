@@ -10,7 +10,7 @@
  "files": [
   {
    "path": "README.md",
-   "size": 3916
+   "size": 4601
   },
   {
    "path": "UPLOAD-CHECKLIST.txt",
@@ -102,7 +102,7 @@
   },
   {
    "path": "assets/SettingsScreen-C0_pKAdc.js",
-   "size": 19671
+   "size": 20126
   },
   {
    "path": "assets/SoundDrill-BzhBGpLq.js",
@@ -298,7 +298,7 @@
   },
   {
    "path": "index.html",
-   "size": 2442
+   "size": 3125
   },
   {
    "path": "manifest.webmanifest",
