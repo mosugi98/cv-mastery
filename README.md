@@ -26,6 +26,10 @@ The calculators are source files in `tools/calc/`. After changing them run `node
 patches the route into the site bundle, and updates `sw.js` and `upload-manifest.json`), then `node --test tools/calc/tests/*.test.mjs`.
 `tools/calc/browser-test.py` drives the real pages with Playwright against a local server (`python3 -m http.server 8765` from the repository root).
 
+## Practice in the simulator
+
+simulator.html is a separate page (not part of the exported study app) that links to nine cases in the Cardiovascular Simulator: https://mosugi98.github.io/cardiovascular-simulator-app/. Each link opens the case with a 'Back to CARDIO PPDS MASTER' link, using the simulator's ?return= setting (see its docs/integration.md). It needs the internet. It is not in the offline cache or upload-manifest.json, which are generated, so the export does not touch it. Open it at ./simulator.html.
+
 ## Not medical advice
 
 This is an educational study aid for exam preparation. It is not medical advice and it is not for use in patient care.

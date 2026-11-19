@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Practice in the simulator - CARDIO PPDS MASTER</title>
+  <meta name="description" content="Nine cardiovascular emergency cases to practise in the Cardiovascular Simulator (educational use).">
+  <meta name="color-scheme" content="light dark">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+  <style>
+    :root { --bg: #fff8f4; --ink: #2a1d21; --muted: #6b5a5f; --line: #e8d6d0; --card: #ffffff; --link: #8a1f3d; }
+    @media (prefers-color-scheme: dark) { :root { --bg: #191214; --ink: #f4e8ea; --muted: #b9a5aa; --line: #3a2a2f; --card: #231a1d; --link: #ff9bb3; } }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, sans-serif; }
+    main { max-width: 44rem; margin: 0 auto; padding: 16px; }
+    a { color: var(--link); text-underline-offset: 3px; }
+    a:focus-visible { outline: 3px solid var(--link); outline-offset: 2px; }
+    .back { display: inline-block; padding: 10px 0; font-weight: 600; }
+    h1 { font-size: 1.6rem; line-height: 1.2; margin: 8px 0 8px; }
+    p { margin: 0 0 12px; max-width: 65ch; }
+    ul { list-style: none; margin: 16px 0; padding: 0; display: grid; gap: 10px; }
+    li { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+    li h2 { font-size: 1.05rem; margin: 0 0 2px; }
+    li p { color: var(--muted); font-size: .95rem; margin: 0 0 8px; }
+    .modes { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+    .modes a { display: inline-block; padding: 10px 0; min-height: 44px; font-weight: 600; }
+    .note { color: var(--muted); font-size: .9rem; }
+  </style>
+</head>
+<body>
+<main>
+  <a class="back" href="./">Back to CARDIO PPDS MASTER</a>
+  <h1>Practice in the simulator</h1>
+  <p>Nine emergency cardiovascular cases you can play: read the vitals, examine the patient, order tests and give treatment. Learning mode lets you take your time. Challenge mode runs in real time.</p>
+  <p>The simulator opens in its own page and has a link back here. It needs an internet connection.</p>
+  <ul id="cases"></ul>
+  <p class="note">Educational use only. The simulator's clinical content has not been clinically reviewed and is not for patient care. Your simulator scores stay in your own browser and are not part of the study progress backup.</p>
+</main>
+<script>
+  (function () {
+    var SIM = "https://mosugi98.github.io/cardiovascular-simulator-app/";
+    var BACK = "?return=" + encodeURIComponent("/cv-mastery/simulator.html") + "&returnLabel=" + encodeURIComponent("CARDIO PPDS MASTER");
+    var CASES = [
+      ["adhf", "Acute decompensated heart failure", "Breathless, crackles, raised neck veins."],
+      ["stemi-anterior", "Anterior STEMI", "Chest pain with ST elevation. Time matters."],
+      ["afib-rvr", "Atrial fibrillation with rapid rate", "Fast irregular rhythm. Rate or rhythm control?"],
+      ["svt-stable", "Stable supraventricular tachycardia", "A fast regular rhythm in a stable patient."],
+      ["vt-unstable", "Unstable ventricular tachycardia", "A wide fast rhythm with a failing circulation."],
+      ["cardiac-tamponade", "Cardiac tamponade", "Low pressure, muffled sounds, fluid around the heart."],
+      ["cardiogenic-shock", "Cardiogenic shock", "A failing pump with cold, wet, hypotensive signs."],
+      ["cardiac-arrest", "Cardiac arrest", "No pulse. Compressions, rhythm check and shocks."],
+      ["hypertensive-emergency", "Hypertensive emergency", "Severe blood pressure with organ damage."]
+    ];
+    var list = document.getElementById("cases");
+    CASES.forEach(function (c) {
+      var li = document.createElement("li");
+      var h = document.createElement("h2"); h.textContent = c[1];
+      var p = document.createElement("p"); p.textContent = c[2];
+      var m = document.createElement("div"); m.className = "modes";
+      [["learning", "Learning mode"], ["challenge", "Challenge mode"]].forEach(function (mode) {
+        var a = document.createElement("a");
+        a.href = SIM + BACK + "#/play/" + c[0] + "/" + mode[0];
+        a.textContent = mode[1];
+        a.setAttribute("aria-label", mode[1] + ": " + c[1]);
+        m.appendChild(a);
+      });
+      li.appendChild(h); li.appendChild(p); li.appendChild(m); list.appendChild(li);
+    });
+  })();
+</script>
+<noscript><p>Open the <a href="https://mosugi98.github.io/cardiovascular-simulator-app/">simulator</a> to choose a case.</p></noscript>
+</body>
+</html>
