@@ -28,7 +28,9 @@ patches the route into the site bundle, and updates `sw.js` and `upload-manifest
 
 ## Practice in the simulator
 
-simulator.html is a separate page (not part of the exported study app) that links to nine cases in the Cardiovascular Simulator: https://mosugi98.github.io/cardiovascular-simulator-app/. Each link opens the case with a 'Back to CARDIO PPDS MASTER' link, using the simulator's ?return= setting (see its docs/integration.md). It needs the internet. It is not in the offline cache or upload-manifest.json, which are generated, so the export does not touch it. Open it at ./simulator.html.
+The home screen has a *Patient simulator* card, beside *ECG animations*. It opens simulator.html, which shows the Cardiovascular Simulator (https://mosugi98.github.io/cardiovascular-simulator-app/) inside this site, under a *Back to CARDIO PPDS MASTER* link. It needs the internet. The simulator's scores live in the same browser but are not part of the study progress backup.
+
+**Export note.** The card was added by editing ssets/HomeScreen-*.js and sw.js directly, because the export source was not at hand. Add the same card to the home screen in the app source, or the next export will remove it. upload-manifest.json has the new size of that file.
 
 ## Not medical advice
 
