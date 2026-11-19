@@ -1,10 +1,10 @@
 {
  "about": "Every file of this site with its size in bytes, written last by the build. Settings > Check this site's files compares the published site with `files`. `hidden` are repository files (not part of the site). See UPLOAD-CHECKLIST.txt.",
  "counts": {
-  "total": 77,
+  "total": 78,
   "assets": 53,
   "data": 14,
-  "top": 10,
+  "top": 11,
   "hidden": 3
  },
  "files": [
@@ -102,7 +102,7 @@
   },
   {
    "path": "assets/SettingsScreen-C0_pKAdc.js",
-   "size": 20126
+   "size": 20251
   },
   {
    "path": "assets/SoundDrill-BzhBGpLq.js",
@@ -310,7 +310,11 @@
   },
   {
    "path": "sw.js",
-   "size": 5852
+   "size": 5940
+  },
+  {
+   "path": "terms.html",
+   "size": 7992
   }
  ],
  "hidden": [
