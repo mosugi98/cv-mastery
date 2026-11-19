@@ -21,6 +21,8 @@
     <link rel="apple-touch-icon" href="./icon-192.png" />
     <!-- Applies the saved theme before first paint. Keep identical to THEME_INIT_SCRIPT in lib/theme.ts (a test checks it). -->
     <script>(function(){try{var t=localStorage.getItem("mc-theme");if(["light","dark","contrast","contrast-dark"].indexOf(t)>-1)document.documentElement.setAttribute("data-theme",t)}catch(e){}})();</script>
+    <!-- When a newer version of the site takes over from an older offline copy, reload once so the update shows without a manual reload. Waits while a mock exam is open. -->
+    <script>(function(){if(!("serviceWorker"in navigator))return;var s=navigator.serviceWorker,had=!!s.controller,done=false;function go(){if(done)return;if(/^#\/exam/.test(location.hash)){addEventListener("hashchange",go,{once:true});return}done=true;location.reload()}s.addEventListener("controllerchange",function(){if(had)go()});document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")s.getRegistration().then(function(r){if(r)r.update()}).catch(function(){})})})();</script>
     <script type="module" crossorigin src="./assets/index-Qvu1KfFE.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-DOpjUhf-.css">
   </head>
